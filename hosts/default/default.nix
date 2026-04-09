@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }:
 
 {
-  imports = [ ];
+  imports = [];
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
@@ -24,6 +24,12 @@
   users.users.lznauy.shell = pkgs.zsh;
 
   programs.zsh.enable = true;
+  
+  # Niri
+  programs.niri.enable = true;
+  services.xserver.enable = true;
+  services.displayManager.gdm.enable = true;
+  services.displayManager.gdm.wayland = true;
 
   environment.systemPackages = with pkgs; [
     vim

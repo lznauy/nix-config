@@ -14,9 +14,18 @@
       url = "github:nix-community/nix4nvchad";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    noctalia = {
+      url = "github:noctalia-dev/noctalia-shell";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
   };
 
-  outputs = { self, nixpkgs, home-manager, nix4nvchad, claude-code, ... }@inputs:
+  outputs = { 
+    self, nixpkgs, home-manager, 
+    nix4nvchad, claude-code, noctalia, ... 
+  }@inputs:
   {
     nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
 
@@ -37,6 +46,7 @@
 
           home-manager.sharedModules = [
             inputs.nix4nvchad.homeManagerModules.default
+            inputs.noctalia.homeModules.default
           ];
 
           home-manager.users.lznauy = import ./home/default.nix;

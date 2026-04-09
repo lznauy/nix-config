@@ -6,6 +6,7 @@
     ./git.nix
     ./zsh.nix
     ./nvchad.nix
+    ./noctalia.nix
   ];
 
   home.packages = with pkgs; [
