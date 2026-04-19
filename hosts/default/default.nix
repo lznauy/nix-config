@@ -3,6 +3,7 @@
 {
   imports = [
     ./i18n.nix
+    ./clash-verge.nix
   ];
 
   boot.loader.systemd-boot.enable = true;

@@ -38,5 +38,6 @@ home.packages = with pkgs; [
 
     kitty
     google-chrome
+    splayer
   ];
 }
