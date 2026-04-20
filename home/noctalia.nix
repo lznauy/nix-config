@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 {
   programs.noctalia-shell = {
     enable = true;
@@ -37,7 +37,11 @@
       };
       wallpaper = {
         enabled = true;
+        overviewEnabled = true;
         useSolidColor = false;
+        directory = "${config.home.homeDirectory}/.config/noctalia/wallpapers";
+        viewMode = "crop";
+        wallpaperChangeMode = "random";
       };
       colorSchemes = {
         predefinedScheme = "Dracula";
@@ -46,9 +50,8 @@
     };
   };
 
-  home.file.".config/noctalia/wallpapers/wallpaper.png".source = ./wallpapers/wallpaper.png;
-  home.file.".cache/noctalia/wallpapers.json".text = builtins.toJSON {
-    defaultWallpaper = "${config.home.homeDirectory}/.config/noctalia/wallpapers/wallpaper.png";
-    wallpapers = { };
+  home.file.".config/noctalia/wallpapers" = {
+    source = ./wallpapers;
+    recursive = true;
   };
 }

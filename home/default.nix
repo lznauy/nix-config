@@ -5,10 +5,10 @@
   imports = [
     ./git.nix
     ./gtk.nix
-    ./zsh.nix
+    ./shell/default.nix
     ./nixvim.nix
     ./noctalia.nix
-    ./niri.nix
+    ./niri/default.nix
     ./kitty.nix
     ./fcitx5.nix
     ./fastfetch.nix
@@ -22,8 +22,6 @@ home.packages = with pkgs; [
     fd
     ripgrep
     bat
-
-    zsh-powerlevel10k
 
     claude-code
     opencode

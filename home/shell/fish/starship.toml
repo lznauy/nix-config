@@ -1,0 +1,243 @@
+# Starship 提示符配置
+# ~/.config/starship.toml
+# 轻量、快速、可定制的终端提示符
+
+# ══════════════════════════════════════════════════════════════════
+# 🎨 通用设置
+# ══════════════════════════════════════════════════════════════════
+
+# 提示符结构布局
+format = """
+$os\
+$username\
+$hostname\
+$directory\
+$git_branch\
+$git_status\
+$git_commit\
+$rust\
+$python\
+$golang\
+$nix_shell\
+$docker_context\
+$cmd_duration\
+$time\
+$line_break\
+$character"""
+
+# 命令超时时间 (毫秒)
+command_timeout = 1000
+
+# 仓库扫描超时 (毫秒)，避免大仓库卡顿
+scan_timeout = 200
+
+# 换行前添加空行
+add_newline = true
+
+palette = "noctalia"
+
+# ══════════════════════════════════════════════════════════════════
+# 📍 提示符符号
+# ══════════════════════════════════════════════════════════════════
+
+[character]
+success_symbol = "[❯](bold mauve)"
+error_symbol = "[❯](bold red)"
+vimcmd_symbol = "[❮](bold green)"
+vimcmd_replace_symbol = "[❮](bold purple)"
+vimcmd_replace_one_symbol = "[❮](bold purple)"
+vimcmd_visual_symbol = "[❮](bold yellow)"
+
+# ══════════════════════════════════════════════════════════════════
+# 💻 操作系统图标
+# ══════════════════════════════════════════════════════════════════
+
+[os]
+disabled = false
+style = "bold blue"
+format = "[$symbol]($style) "
+
+[os.symbols]
+NixOS = " "
+Linux = " "
+Macos = " "
+Windows = " "
+
+# ══════════════════════════════════════════════════════════════════
+# 👤 用户名与主机名
+# ══════════════════════════════════════════════════════════════════
+
+[username]
+show_always = false
+style_user = "bold lavender"
+style_root = "bold red"
+format = "[$user]($style)@"
+
+[hostname]
+ssh_only = true
+style = "bold green"
+format = "[$hostname]($style) "
+
+# ══════════════════════════════════════════════════════════════════
+# 📁 路径显示
+# ══════════════════════════════════════════════════════════════════
+
+[directory]
+style = "bold sky"
+format = "[$path]($style)[$read_only]($read_only_style) "
+truncation_length = 4
+truncation_symbol = "…/"
+truncate_to_repo = true
+read_only = " 󰌾"
+read_only_style = "bold red"
+
+[directory.substitutions]
+"Documents" = "󰈙 "
+"Downloads" = " "
+"Music" = "󰝚 "
+"Pictures" = " "
+"Projects" = "󰲋 "
+"~" = "󰋜 "
+
+# ══════════════════════════════════════════════════════════════════
+# 🌿 Git 状态
+# ══════════════════════════════════════════════════════════════════
+
+[git_branch]
+symbol = " "
+style = "bold mauve"
+format = "on [$symbol$branch(:$remote_branch)]($style) "
+
+[git_status]
+style = "bold maroon"
+format = '([\[$all_status$ahead_behind\]]($style) )'
+ahead = "⇡${count}"
+behind = "⇣${count}"
+diverged = "⇕⇡${ahead_count}⇣${behind_count}"
+conflicted = "="
+untracked = "?"
+stashed = "$"
+modified = "!"
+staged = "+"
+renamed = "»"
+deleted = "✘"
+
+[git_commit]
+style = "bold green"
+format = '[\($hash$tag\)]($style) '
+commit_hash_length = 7
+tag_disabled = false
+tag_symbol = " 🏷  "
+only_detached = true
+
+# ══════════════════════════════════════════════════════════════════
+# 🦀 Rust 环境
+# ══════════════════════════════════════════════════════════════════
+
+[rust]
+symbol = "🦀 "
+style = "bold peach"
+format = "via [$symbol($version )]($style)"
+detect_extensions = ["rs"]
+detect_files = ["Cargo.toml", "Cargo.lock"]
+
+# ══════════════════════════════════════════════════════════════════
+# 🐍 Python 环境
+# ══════════════════════════════════════════════════════════════════
+
+[python]
+symbol = " "
+style = "bold yellow"
+format = 'via [${symbol}${pyenv_prefix}(${version} )(\($virtualenv\) )]($style)'
+detect_extensions = ["py"]
+detect_files = ["requirements.txt", "pyproject.toml", "setup.py", "Pipfile"]
+
+# ══════════════════════════════════════════════════════════════════
+# 🐹 Go 环境
+# ══════════════════════════════════════════════════════════════════
+
+[golang]
+symbol = " "
+style = "bold cyan"
+format = "via [$symbol($version )]($style)"
+detect_extensions = ["go"]
+detect_files = ["go.mod", "go.sum"]
+
+# ══════════════════════════════════════════════════════════════════
+# 📦 Node.js 环境
+# ══════════════════════════════════════════════════════════════════
+
+[nodejs]
+disabled = true
+
+# ══════════════════════════════════════════════════════════════════
+# ❄️ Nix Shell 环境
+# ══════════════════════════════════════════════════════════════════
+
+[nix_shell]
+symbol = " "
+style = "bold blue"
+impure_msg = "[impure](bold red)"
+pure_msg = "[pure](bold green)"
+format = 'via [$symbol$state( \($name\))]($style) '
+
+# ══════════════════════════════════════════════════════════════════
+# 🐳 Docker 环境
+# ══════════════════════════════════════════════════════════════════
+
+[docker_context]
+symbol = " "
+style = "bold blue"
+format = "via [$symbol$context]($style) "
+only_with_files = true
+detect_files = ["docker-compose.yml", "docker-compose.yaml", "Dockerfile"]
+
+# ══════════════════════════════════════════════════════════════════
+# ⏱️ 命令耗时
+# ══════════════════════════════════════════════════════════════════
+
+[cmd_duration]
+min_time = 2000
+style = "bold yellow"
+format = "took [$duration]($style) "
+show_milliseconds = false
+show_notifications = false
+
+[time]
+disabled = false
+style = "bold overlay2"
+format = "[$time]($style) "
+time_format = "%H:%M"
+utc_time_offset = "local"
+
+# ══════════════════════════════════════════════════════════════════
+# 🎨 配色板（DMS/Noctalia 风格）
+# ══════════════════════════════════════════════════════════════════
+
+[palettes.noctalia]
+rosewater = "#f8fafc"
+flamingo = "#e2e8f0"
+pink = "#c7d2fe"
+mauve = "#a5b4fc"
+red = "#f87171"
+maroon = "#fb7185"
+peach = "#fbbf24"
+yellow = "#fbbf24"
+green = "#34d399"
+teal = "#5eead4"
+sky = "#7dd3fc"
+sapphire = "#38bdf8"
+blue = "#7dd3fc"
+lavender = "#a5b4fc"
+text = "#e2e8f0"
+subtext1 = "#cbd5e1"
+subtext0 = "#94a3b8"
+overlay2 = "#64748b"
+overlay1 = "#475569"
+overlay0 = "#334155"
+surface2 = "#1f2937"
+surface1 = "#111827"
+surface0 = "#0f172a"
+base = "#0b0f14"
+mantle = "#0b0f14"
+crust = "#0b0f14"

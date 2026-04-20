@@ -1,5 +1,11 @@
 { config, pkgs, ... }:
+
+let
+  p10k-theme = pkgs.zsh-powerlevel10k;
+in
 {
+  home.packages = [ p10k-theme ];
+
   home.shell.enableZshIntegration = true;
 
   programs.zsh = {
@@ -16,5 +22,5 @@
     };
   };
 
-  home.file.".p10k.zsh".source = ./p10k.zsh;
+  home.file.".p10k.zsh".source = ./shell/zsh/p10k.zsh;
 }

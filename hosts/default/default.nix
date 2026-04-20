@@ -25,10 +25,13 @@
     isNormalUser = true;
     extraGroups = [ "wheel" "users" "networkmanager" "docker" ];
   };
-  users.users.lznauy.shell = pkgs.zsh;
 
-  programs.zsh.enable = true;
-  
+  # users.users.lznauy.shell = pkgs.zsh;
+  users.users.lznauy.shell = pkgs.fish;
+
+  # programs.zsh.enable = true;
+  programs.fish.enable = true;
+
   programs.niri.enable = true;
   services.xserver.enable = true;
   services.displayManager.gdm.enable = true;
