@@ -176,14 +176,3 @@ hotkey-overlay {
 // ============================================================
 screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
 // screenshot-path null  // 不保存到磁盘
-
-// ============================================================
-// 动画配置 (animations)
-// 文档: https://niri-wm.github.io/niri/Configuration%3A-Animations.html
-// ============================================================
-animations {
-    // off               // 禁用所有动画
-    // slowdown 3.0      // 动画减速倍数 (>1 减速, <1 加速)
-}
-
-
