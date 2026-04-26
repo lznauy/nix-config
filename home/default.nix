@@ -49,6 +49,7 @@
     iotop # I/O 监控工具
     cloc # 代码行数统计工具
     doggo # 现代 DNS 查询工具
+    quien # 更好的 WHOIS 查询工具
     dive # Docker 镜像层分析工具
     lsof # 查看打开文件工具
     wget # HTTP 下载工具

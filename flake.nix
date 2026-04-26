@@ -25,6 +25,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    quien = {
+      url = "github:retlehs/quien";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
   };
 
   outputs =
@@ -36,6 +41,7 @@
       noctalia,
       claude-code,
       agenix,
+      quien,
       ...
     }@inputs:
     {
@@ -50,6 +56,9 @@
               nixpkgs.config.allowUnfree = true;
               nixpkgs.overlays = [
                 claude-code.overlays.default
+                (final: prev: {
+                  quien = quien.packages.${prev.system}.default;
+                })
               ];
             }
           )
