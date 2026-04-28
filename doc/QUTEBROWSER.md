@@ -51,7 +51,11 @@
 | 无 | `openwrt` - 路由器管理 |
 | 无 | `chatgpt` - ChatGPT |
 | 无 | `nixvim` - Nixvim 文档 |
-| 无 | `go:gh` 打开 GitHub |
+| 无 | `hyprland` - Hyprland Wiki |
+| 无 | `nerdfont` - Nerd Font 备忘录 |
+| 无 | `youtube` - YouTube |
+
+使用方式：`go` 打开快速跳转列表，选择书签名称即可打开对应网站。
 
 ## 搜索引擎
 

@@ -63,7 +63,7 @@
               nixpkgs.overlays = [
                 claude-code.overlays.default
                 (final: prev: {
-                  quien = quien.packages.${prev.system}.default;
+                  quien = quien.packages.${prev.stdenv.hostPlatform.system}.default;
                 })
               ];
             }
@@ -79,7 +79,7 @@
             home-manager.sharedModules = [
               inputs.nixvim.homeModules.nixvim
               inputs.noctalia.homeModules.default
-              inputs.stylix.homeManagerModules.stylix
+              inputs.stylix.homeModules.stylix
             ];
 
             home-manager.users.lznauy = import ./home/default.nix;
@@ -87,5 +87,7 @@
         ];
         specialArgs = { inherit inputs; };
       };
+
+      devShells.x86_64-linux = import ./shells.nix { pkgs = nixpkgs.legacyPackages.x86_64-linux; };
     };
 }

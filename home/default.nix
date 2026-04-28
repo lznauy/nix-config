@@ -28,7 +28,7 @@
     ./programs/asciinema.nix
     ./programs/btm.nix
     ./programs/cava.nix
-    ./programs/devtools.nix
+    ./programs/devshell/home.nix
     ./programs/fastfetch.nix
     ./programs/git.nix
     ./programs/nh.nix
@@ -69,5 +69,7 @@
     fzf # 模糊搜索工具
     lazygit # 终端 Git 客户端
     hugo # 静态网站生成器
+    mkcert # 本地 HTTPS 证书生成工具
+    comma # 使用逗号临时运行未安装的程序
   ];
 }

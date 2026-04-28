@@ -117,7 +117,7 @@ cat ~/.config/<app>/config-file
 
 ## 注意事项
 
-- `autoEnable = false` 下，必须在 `stylix.nix` 的 `targets` 中显式启用 Target
+- `autoEnable = false` 下，必须在 `stylix/default.nix` 的 `targets` 中显式启用 Target
 - 手动引用颜色的应用不受 `autoEnable` 影响，随时可用
 - Target 可能设置你没注意到的选项（字体、透明度等），接入后务必检查
 - 切换配色方案只需改 `name`，无需修改各应用配置

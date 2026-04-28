@@ -2,6 +2,10 @@
 { pkgs, lib, ... }:
 
 {
+  home.packages = with pkgs; [
+    tree-sitter # 语法解析器生成器（nixvim treesitter 依赖）
+  ];
+
   programs.nixvim = {
     enable = true;
 
