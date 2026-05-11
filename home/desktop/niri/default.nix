@@ -4,6 +4,7 @@
     grim # Wayland 截图工具
     slurp # Wayland 区域选择工具
     wl-clipboard # Wayland 剪贴板工具
+    clipse # TUI 粘贴板管理器
   ];
 
   xdg.configFile."niri/config.kdl" = {

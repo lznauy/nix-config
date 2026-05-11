@@ -23,6 +23,12 @@ window-rule {
     draw-border-with-background false
 }
 
+window-rule {
+    match app-id=r#"^clipse$"#
+    open-floating true
+    default-column-width { proportion 0.35; }
+}
+
 // ============================================================
 // 输入设备配置 (input)
 // 配置键盘、触摸板、鼠标等输入设备
@@ -155,6 +161,7 @@ layout {
 // 启动时自动运行的程序
 // ============================================================
 spawn-at-startup "waybar"
+spawn-at-startup "clipse" "-listen"
 // spawn-sh-at-startup "命令"  // 通过 shell 运行命令
 
 // ============================================================
