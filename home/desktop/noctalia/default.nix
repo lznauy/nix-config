@@ -9,6 +9,26 @@
   programs.noctalia-shell = {
     enable = true;
     systemd.enable = true;
+    colors = {
+      # Polar Night - 背景
+      mSurface = "#2E3440";
+      mSurfaceVariant = "#3B4252";
+      mShadow = "#000000";
+      mOutline = "#4C566A";
+      # Snow Storm - 文字
+      mOnSurface = "#D8DEE9";
+      mOnSurfaceVariant = "#81A1C1";
+      # Frost - 强调色
+      mPrimary = "#5E81AC";
+      mOnPrimary = "#ECEFF4";
+      mSecondary = "#4C566A";
+      mOnSecondary = "#D8DEE9";
+      mTertiary = "#88C0D0";
+      mOnTertiary = "#2E3440";
+      # Aurora - 功能色
+      mError = "#BF616A";
+      mOnError = "#ECEFF4";
+    };
     plugins = {
       sources = [
         {

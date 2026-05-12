@@ -153,7 +153,7 @@
 | `<Space>fg` | 搜索内容 |
 | `<Space>fb` | 搜索缓冲区 |
 | `<Space>fh` | 搜索帮助 |
-| `Ctrl+h/j/k/l` | 窗口导航 |
+| `Ctrl+方向键` | 窗口导航 |
 
 ### Visual 模式
 

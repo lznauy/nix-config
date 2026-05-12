@@ -59,34 +59,38 @@
   # Window navigation
   {
     mode = "n";
-    key = "<C-h>";
+    key = "<C-Left>";
     action = "<C-w>h";
     options = {
       silent = true;
+      desc = "Go to left window";
     };
   }
   {
     mode = "n";
-    key = "<C-j>";
+    key = "<C-Down>";
     action = "<C-w>j";
     options = {
       silent = true;
+      desc = "Go to window below";
     };
   }
   {
     mode = "n";
-    key = "<C-k>";
+    key = "<C-Up>";
     action = "<C-w>k";
     options = {
       silent = true;
+      desc = "Go to window above";
     };
   }
   {
     mode = "n";
-    key = "<C-l>";
+    key = "<C-Right>";
     action = "<C-w>l";
     options = {
       silent = true;
+      desc = "Go to right window";
     };
   }
   # Visual mode: move selected lines down
