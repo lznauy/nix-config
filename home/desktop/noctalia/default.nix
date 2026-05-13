@@ -96,24 +96,24 @@
             }
             {
               id = "SystemMonitor";
-              compactMode = false; # 紧凑模式
-              diskPath = "/persistent"; # 磁盘监控路径
-              iconColor = "none"; # 图标颜色 (none=默认)
-              showCpuFreq = false; # 显示CPU频率
-              showCpuTemp = false; # 显示CPU温度
-              showCpuUsage = true; # 显示CPU使用率
-              showDiskAvailable = false; # 显示磁盘可用空间
-              showDiskUsage = true; # 显示磁盘使用量
-              showDiskUsageAsPercent = false; # 磁盘使用量显示为百分比
-              showGpuTemp = false; # 显示GPU温度
-              showLoadAverage = true; # 显示系统负载平均值
-              showMemoryAsPercent = true; # 内存显示为百分比
-              showMemoryUsage = true; # 显示内存使用量
-              showNetworkStats = true; # 显示网络统计
-              showSwapUsage = false; # 显示交换分区使用量
-              textColor = "none"; # 文字颜色 (none=默认)
-              useMonospaceFont = true; # 使用等宽字体
-              usePadding = false; # 使用内边距
+              compactMode = true;
+              diskPath = "/";
+              iconColor = "none";
+              showCpuFreq = false;
+              showCpuTemp = false;
+              showCpuUsage = true;
+              showDiskAvailable = false;
+              showDiskUsage = false;
+              showDiskUsageAsPercent = false;
+              showGpuTemp = false;
+              showLoadAverage = false;
+              showMemoryAsPercent = false;
+              showMemoryUsage = true;
+              showNetworkStats = true;
+              showSwapUsage = false;
+              textColor = "none";
+              useMonospaceFont = true;
+              usePadding = false;
             }
             {
               id = "ActiveWindow";
