@@ -20,6 +20,8 @@ in
     context = all-context;
   };
 
+  home.sessionVariables.CLAUDE_CODE_EXECUTABLE = "${pkgs.claude-code}/bin/claude";
+
   home.packages = with pkgs; [
     mcp-nixos
   ];
