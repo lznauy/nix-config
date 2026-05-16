@@ -37,7 +37,9 @@
           url = "https://github.com/noctalia-dev/noctalia-plugins";
         }
       ];
-      states = { };
+      states = {
+        # "network-manager-vpn".enabled = true;
+      };
       version = 2;
     };
     settings = {
@@ -271,7 +273,7 @@
         disableDiscoverability = false; # 禁用被发现
       };
       dock = {
-        enabled = true; # 启用停靠栏
+        enabled = false; # 启用停靠栏
         position = "bottom"; # 位置 (top/bottom/left/right)
         displayMode = "auto_hide"; # 显示模式 (always_visible/auto_hide/hidden)
         dockType = "floating"; # 类型 (docked/floating/auto)

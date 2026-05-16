@@ -6,6 +6,7 @@ binds {
     // -------------------------
     Mod+Shift+Slash { show-hotkey-overlay; }
     Mod+T { spawn "kitty"; }
+    Mod+Shift+T { spawn "qs-todo"; }
     Mod+D { spawn "fuzzel"; }
     Mod+Shift+L { spawn "hyprlock"; }
     Mod+O repeat=false { toggle-overview; }

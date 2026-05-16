@@ -1,0 +1,5 @@
+singleton Appearance 1.0 Appearance.qml
+singleton Animations 1.0 Animations.qml
+singleton DynamicIslandMotion 1.0 DynamicIslandMotion.qml
+singleton Sizes 1.0 Sizes.qml
+singleton Paths 1.0 Paths.qml

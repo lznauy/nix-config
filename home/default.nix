@@ -15,6 +15,8 @@
     ./desktop/niri/default.nix
     ./desktop/noctalia/default.nix
     ./desktop/hyprlock/default.nix
+    ./desktop/quickshell/todo
+    ./desktop/quickshell/dynamic-island
     ./desktop/fuzzel.nix
     ./desktop/kitty.nix
     ./desktop/gtk.nix
@@ -79,5 +81,6 @@
     comma # 使用逗号临时运行未安装的程序
     wayscrollshot # Wayland 滚动截图工具
     upx # 可执行文件压缩工具
+    blueman # 蓝牙管理 GUI
   ];
 }
