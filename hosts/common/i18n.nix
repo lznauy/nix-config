@@ -37,6 +37,12 @@
       noto-fonts-cjk-sans # Noto CJK 无衬线字体(中日韩)
       noto-fonts-cjk-serif # Noto CJK 衬线字体(中日韩)
       noto-fonts-color-emoji # Noto 彩色 Emoji 字体
+      liberation_ttf # 兼容 Arial / Times New Roman / Courier New
+      carlito # 兼容 Calibri
+      caladea # 兼容 Cambria
+      lxgw-wenkai # 霞鹜文楷 - 楷体
+      arphic-ukai # AR PL UKai - 文鼎楷体
+      wqy_microhei # 文泉驿微米黑 - 非VF TrueType CJK
     ];
     fontconfig = {
       enable = true;
@@ -48,6 +54,17 @@
         sansSerif = [ "Noto Sans CJK SC" ];
         emoji = [ "Noto Color Emoji" ];
       };
+      localConf = ''
+        <?xml version="1.0"?>
+        <!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">
+        <fontconfig>
+          <!-- 楷体_GB2312 / 楷体 / KaiTi / KaiTi_GB2312 → LXGW WenKai -->
+          <alias><family>楷体_GB2312</family><prefer><family>LXGW WenKai</family><family>AR PL UKai CN</family></prefer></alias>
+          <alias><family>楷体</family><prefer><family>LXGW WenKai</family><family>AR PL UKai CN</family></prefer></alias>
+          <alias><family>KaiTi</family><prefer><family>LXGW WenKai</family><family>AR PL UKai CN</family></prefer></alias>
+          <alias><family>KaiTi_GB2312</family><prefer><family>LXGW WenKai</family><family>AR PL UKai CN</family></prefer></alias>
+        </fontconfig>
+      '';
     };
   };
 }

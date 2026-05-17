@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 let
   # WeChat 跑在 XWayland 上，但 waylandFrontend=true 时
@@ -29,6 +29,26 @@ in
 {
   programs.obs-studio.enable = true; # OBS 直播/录屏工具
 
+  # OnlyOffice 使用 FHS 沙箱运行，不使用系统 fontconfig
+  # 直接扫描 ~/.local/share/fonts/，需要拷贝非可变 TrueType CJK 字体
+  home.activation.linkOnlyofficeFonts = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    fonts_dir="$HOME/.local/share/fonts"
+    $DRY_RUN_CMD mkdir -p $fonts_dir
+    for f in ${pkgs.lxgw-wenkai}/share/fonts/truetype/*.ttf; do
+      $DRY_RUN_CMD cp -f "$f" "$fonts_dir/"
+    done
+    for f in ${pkgs.wqy_microhei}/share/fonts/truetype/*.ttc; do
+      $DRY_RUN_CMD cp -f "$f" "$fonts_dir/"
+    done
+    for f in ${pkgs.arphic-ukai}/share/fonts/truetype/*.ttc; do
+      $DRY_RUN_CMD cp -f "$f" "$fonts_dir/"
+    done
+    # 清除 OnlyOffice 字体缓存，强制重新扫描
+    oo_fonts_cache="$HOME/.local/share/onlyoffice/desktopeditors/data/fonts"
+    $DRY_RUN_CMD rm -f "$oo_fonts_cache/AllFonts.js" "$oo_fonts_cache/AllFonts.js."*
+    $DRY_RUN_CMD rm -f "$oo_fonts_cache/fonts.log" "$oo_fonts_cache/font_selection.bin"
+  '';
+
   home.packages = with pkgs; [
     google-chrome # Google Chrome 浏览器
     splayer # SPlayer 视频播放器
@@ -37,5 +57,6 @@ in
     kazumi # 番剧聚合与在线观看
     zed-editor-wrapped # 高性能协作代码编辑器
     wechat-im # 微信
+    onlyoffice-desktopeditors # OnlyOffice 桌面办公套件
   ];
 }
