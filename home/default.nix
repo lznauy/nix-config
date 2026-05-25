@@ -82,5 +82,6 @@
     wayscrollshot # Wayland 滚动截图工具
     upx # 可执行文件压缩工具
     blueman # 蓝牙管理 GUI
+    pulseaudio # PulseAudio 客户端工具 (pactl, parec)
   ];
 }
