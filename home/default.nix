@@ -24,9 +24,14 @@
     ./xdg/default.nix
     ./xdg/mime.nix
     ./xdg/desktop-files.nix
+    ./xdg/autostart.nix
     ./programs/qutebrowser/default.nix
     ./programs/ai/default.nix
     ./programs/apps.nix
+    ./programs/qq
+    ./programs/onlyoffice.nix
+    ./programs/wechat.nix
+    ./programs/zed.nix
     ./programs/asciinema.nix
     ./programs/btm.nix
     ./programs/cava.nix

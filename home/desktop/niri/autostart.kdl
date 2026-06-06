@@ -1,8 +1,3 @@
 // Autostart — niri 启动时自动运行的程序
-// 维护这个文件来增删开机启动项
-spawn-at-startup "fcitx5" "-d"
+
 spawn-at-startup "noctalia-shell"
-spawn-at-startup "clipse" "-listen"
-spawn-at-startup "blueman-applet"
-spawn-at-startup "qs-island"
-spawn-at-startup "clash-verge"

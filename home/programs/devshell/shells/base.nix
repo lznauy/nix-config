@@ -8,5 +8,6 @@ pkgs.mkShell {
     cmake
     pkg-config
     alsa-lib
+    sqlite-interactive
   ];
 }

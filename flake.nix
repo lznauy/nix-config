@@ -73,14 +73,9 @@
                 wayscrollshot = final.callPackage ./pkgs/wayscrollshot.nix { };
                 # 测试环境有问题，跳过
                 pipx = prev.pipx.overridePythonAttrs { doCheck = false; };
-                # 锁定 QQNT 版本，使用腾讯 CDN 下载
-                qq = prev.qq.overrideAttrs (old: {
-                  version = "3.2.29-2026-05-28";
-                  src = prev.fetchurl {
-                    url = "https://qqdl.gtimg.cn/qqfile/QQNT/9.9.31/release/00e6a3e7/QQ_3.2.29_260528_amd64_01.deb";
-                    hash = "sha256-HjgoB5ZzyUmUvA9HgNXYUoZHY5kgZZhi1J0cLyoZjiU=";
-                  };
-                });
+                vips-compat = final.callPackage ./home/programs/qq/vips-compat.nix { };
+                # QQNT — 版本锁定 + vips_g_once 兼容修复
+                qq = final.callPackage ./home/programs/qq/package.nix { qq = prev.qq; };
               })
             ];
           }

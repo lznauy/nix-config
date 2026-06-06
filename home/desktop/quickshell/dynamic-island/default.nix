@@ -22,20 +22,6 @@ in
   # Install the quickshell icon so the desktop entry can find it
   xdg.dataFile."icons/hicolor/scalable/apps/qs-island.svg".source = islandIcon;
 
-  # Autostart entry — written directly to ensure it always exists
-  xdg.configFile."autostart/qs-island.desktop".text = ''
-    [Desktop Entry]
-    Categories=Utility
-    Comment=桌面歌词 / 时钟悬浮组件
-    Exec=qs-island
-    Icon=qs-island
-    Name=Dynamic Island
-    StartupNotify=false
-    Terminal=false
-    Type=Application
-    Version=1.5
-  '';
-
   home.packages = [
     (pkgs.writeShellScriptBin "qs-island" ''
       exec ${pkgs.quickshell}/bin/quickshell \
