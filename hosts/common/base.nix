@@ -25,15 +25,7 @@
     keep-outputs = true;
   };
 
-  # 只保留最近 30 个 generation（systemd-boot 菜单条目）
-  boot.loader.systemd-boot.configurationLimit = 30;
 
-  # 定期垃圾回收，删除 7 天前的无用 store 路径
-  nix.gc = {
-    automatic = true;
-    dates = "weekly";
-    options = "--delete-older-than 7d";
-  };
 
   nixpkgs.config.permittedInsecurePackages = [
     "electron-39.8.10"

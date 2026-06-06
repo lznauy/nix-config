@@ -9,7 +9,7 @@
       # 清理操作的执行频率
       dates = "weekly";
       # 清理参数
-      extraArgs = "--keep 5 --keep-since 3d";
+      extraArgs = "--keep 20 --keep-since 7d";
     };
   };
 }
