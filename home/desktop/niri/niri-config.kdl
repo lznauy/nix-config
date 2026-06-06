@@ -5,6 +5,7 @@
 include "./noctalia-shell.kdl"
 include "./binds.kdl"
 include "./animation.kdl"
+include "./autostart.kdl"
 
 environment {
     QS_ICON_THEME "WhiteSur-dark"
@@ -155,14 +156,6 @@ layout {
         // bottom 64
     }
 }
-
-// ============================================================
-// 启动程序 (spawn-at-startup)
-// 启动时自动运行的程序
-// ============================================================
-spawn-at-startup "waybar"
-spawn-at-startup "clipse" "-listen"
-// spawn-sh-at-startup "命令"  // 通过 shell 运行命令
 
 // ============================================================
 // 快捷键覆盖层 (hotkey-overlay)

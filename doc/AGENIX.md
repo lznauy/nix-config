@@ -35,7 +35,8 @@ nix run github:ryantm/agenix -- -e secrets/<file>.age
 |------|------|
 | `secrets/age-key.age` | age 私钥备份（密码保护） |
 | `secrets/opencode.json.age` | opencode 配置 |
-| `secrets/claude-settings.json.age` | claude settings |
+| `secrets/claude-settings-deepseek.json.age` | Claude Code DeepSeek 配置 |
+| `secrets/claude-settings-mimo.json.age` | Claude Code MIMO 配置 |
 
 ## 安全
 

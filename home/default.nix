@@ -23,7 +23,6 @@
     ./shell/default.nix
     ./xdg/default.nix
     ./xdg/mime.nix
-    ./xdg/autostart.nix
     ./xdg/desktop-files.nix
     ./programs/qutebrowser/default.nix
     ./programs/ai/default.nix
@@ -60,6 +59,7 @@
     wget # HTTP 下载工具
     posting # postman终端版
     gh-dash # github终端版
+    pipx # Python CLI 工具隔离安装器
 
     tree # 目录树展示工具
     fd # 快速文件查找工具

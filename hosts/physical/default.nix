@@ -26,6 +26,12 @@
   hardware.bluetooth.enable = true;
   hardware.bluetooth.powerOnBoot = true;
 
+  # zram swap，内存不足时压缩到内存中，比传统 swap 快
+  zramSwap = {
+    enable = true;
+    memoryPercent = 50;
+  };
+
   services.upower.enable = true;
   services.power-profiles-daemon.enable = true;
   virtualisation.docker.enable = true;
@@ -46,8 +52,15 @@
   programs.zsh.enable = true;
 
   programs.niri.enable = true;
-  services.displayManager.gdm.enable = true;
-  services.displayManager.gdm.wayland = true;
+  # greetd + tuigreet
+  services.greetd = {
+    enable = true;
+    settings = {
+      default_session = {
+        command = "${pkgs.tuigreet}/bin/tuigreet --time --time-format '%Y-%m-%d %H:%M' --remember --remember-session --sessions '${config.services.displayManager.sessionData.desktops}/share/wayland-sessions' --cmd niri";
+      };
+    };
+  };
 
   environment.sessionVariables = {
     QS_ICON_THEME = "WhiteSur-dark";

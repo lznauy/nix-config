@@ -40,17 +40,25 @@ flake 输出两套 `nixosConfigurations`：
 
 ```
 hosts/           → 系统层配置
-  base.nix         公共基础
-  default/         主机
-  virtual/         虚拟机
+  common/          共享基础（base、i18n、secrets、clash）
+  physical/        物理机
+  vmware/          VMware 桌面机
+  virtual/         K3s 虚拟机
 home/            → 用户层配置
   base/            密钥、输入法
   desktop/         窗口、面板、终端
   shell/           Fish、Zsh
-  programs/        应用与工具
+  programs/        应用、devshell、Nixvim、AI
   stylix/          主题
+  xdg/             MIME、自启动
+pkgs/            → 自定义包
 secrets/         → agenix 密钥
 ```
+
+### 系统维护
+
+- **generation 限制**：`boot.loader.systemd-boot.configurationLimit = 30`，每次 rebuild 自动清理，保留最近 30 个回滚点
+- **自动 GC**：每周执行 `nix-collect-garbage --delete-older-than 7d`，释放无用的 store 路径
 
 </td>
 </tr>

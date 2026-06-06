@@ -42,8 +42,16 @@
   programs.zsh.enable = true;
 
   programs.niri.enable = true;
-  services.displayManager.gdm.enable = true;
-  services.displayManager.gdm.wayland = true;
+
+  # greetd + tuigreet
+  services.greetd = {
+    enable = true;
+    settings = {
+      default_session = {
+        command = "${pkgs.tuigreet}/bin/tuigreet --time --time-format '%Y-%m-%d %H:%M' --remember --remember-session --sessions '${config.services.displayManager.sessionData.desktops}/share/wayland-sessions' --cmd niri";
+      };
+    };
+  };
 
   environment.sessionVariables = {
     QS_ICON_THEME = "WhiteSur-dark";

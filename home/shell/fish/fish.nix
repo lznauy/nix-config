@@ -11,6 +11,20 @@
     interactiveShellInit = ''
       set fish_greeting
     '';
+    functions = {
+      claude = {
+        body = "command claude --settings ~/.claude/settings-deepseek.json $argv";
+      };
+      claude-mimo = {
+        body = "command claude --settings ~/.claude/settings-mimo.json $argv";
+      };
+      opencode = {
+        body = "command opencode -m deepseek/deepseek-v4-pro $argv";
+      };
+      opencode-mimo = {
+        body = "command opencode -m mimo/mimo-v2.5-pro $argv";
+      };
+    };
   };
 
   programs.starship = {

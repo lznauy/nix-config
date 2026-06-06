@@ -8,7 +8,6 @@
 {
   programs.noctalia-shell = {
     enable = true;
-    systemd.enable = true;
     colors = {
       # Polar Night - 背景
       mSurface = "#2E3440";

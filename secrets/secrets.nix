@@ -3,5 +3,6 @@ let
 in
 {
   "opencode.json.age".publicKeys = [ lznauy ];
-  "claude-settings.json.age".publicKeys = [ lznauy ];
+  "claude-settings-deepseek.json.age".publicKeys = [ lznauy ];
+  "claude-settings-mimo.json.age".publicKeys = [ lznauy ];
 }

@@ -26,4 +26,9 @@
     source = ./animation.kdl;
     force = true;
   };
+
+  xdg.configFile."niri/autostart.kdl" = {
+    source = ./autostart.kdl;
+    force = true;
+  };
 }

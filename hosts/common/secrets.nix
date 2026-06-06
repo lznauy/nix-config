@@ -8,8 +8,14 @@
     group = "users";
   };
 
-  age.secrets.claude-settings = {
-    file = ../../secrets/claude-settings.json.age;
+  age.secrets.claude-settings-deepseek = {
+    file = ../../secrets/claude-settings-deepseek.json.age;
+    owner = "lznauy";
+    group = "users";
+  };
+
+  age.secrets.claude-settings-mimo = {
+    file = ../../secrets/claude-settings-mimo.json.age;
     owner = "lznauy";
     group = "users";
   };
