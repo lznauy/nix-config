@@ -11,7 +11,6 @@
   imports = [
     ./stylix/default.nix
     ./base/fcitx5.nix
-    ./base/secrets.nix
     ./desktop/niri/default.nix
     ./desktop/noctalia/default.nix
     ./desktop/hyprlock/default.nix
@@ -75,7 +74,6 @@
     tmux # 终端复用器
     gonzo # 日志分析工具
     age # age 加密工具
-    inputs.agenix.packages.${pkgs.stdenv.hostPlatform.system}.default # agenix 秘密管理工具
     sops # 密钥加密管理工具
     nixfmt-tree # Nix 代码格式化工具
     just # 命令运行器(Makefile 替代品)

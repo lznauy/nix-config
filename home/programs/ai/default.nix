@@ -1,7 +1,8 @@
-{ pkgs, ... }:
+{ pkgs, inputs, ... }:
 
 let
   inherit (import ./skills { inherit pkgs; }) all-skills all-rules all-context;
+  llm-agents = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system};
 in
 {
   # Claude Code 配置路径为 ~/.claude/（模块硬编码，无法改为 XDG 路径）
@@ -30,7 +31,8 @@ in
 
   home.sessionVariables.CLAUDE_CODE_EXECUTABLE = "${pkgs.claude-code}/bin/claude";
 
-  home.packages = with pkgs; [
-    mcp-nixos
+  home.packages = [
+    pkgs.mcp-nixos
+    llm-agents.omp
   ];
 }

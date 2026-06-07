@@ -21,7 +21,7 @@
 3. **选对原语**：
    - 配置 → `xdg.configFile`
    - 数据 → `xdg.dataFile`
-   - 敏感配置 → `xdg.configFile` + `mkOutOfStoreSymlink` → agenix
+   - 敏感配置 → sops-nix templates 直接渲染
    - **不要用** `home.file.".config/..."`
 4. **环境变量引用 `config.xdg.*`**，不要硬编码路径
 
@@ -47,8 +47,7 @@
 home/
 ├── default.nix              # 入口，imports 所有子模块
 ├── base/
-│   ├── fcitx5.nix           # 输入法
-│   └── secrets.nix          # xdg.configFile + agenix 敏感配置
+│   └── fcitx5.nix           # 输入法
 ├── desktop/
 │   ├── niri/                # 窗口管理器
 │   ├── noctalia/            # 主题/壁纸

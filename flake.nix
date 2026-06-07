@@ -19,8 +19,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    agenix = {
-      url = "github:ryantm/agenix";
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -39,6 +39,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    llm-agents.url = "github:numtide/llm-agents.nix";
+
   };
 
   outputs =
@@ -49,19 +51,23 @@
       nixvim,
       noctalia,
       claude-code,
-      agenix,
+      sops-nix,
       quien,
       stylix,
       ...
     }@inputs:
     let
       commonModules = [
-        agenix.nixosModules.default
+        sops-nix.nixosModules.sops
         (
           { ... }:
           {
             nixpkgs.hostPlatform = "x86_64-linux";
             nixpkgs.config.allowUnfree = true;
+            nix.settings = {
+              extra-substituters = [ "https://cache.numtide.com" ];
+              extra-trusted-public-keys = [ "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g=" ];
+            };
             nixpkgs.overlays = [
               claude-code.overlays.default
               inputs.nur.overlays.default

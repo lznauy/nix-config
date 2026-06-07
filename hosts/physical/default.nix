@@ -11,7 +11,7 @@
     ../common/i18n.nix
     ../common/clash-verge.nix
     ../common/xwayland.nix
-    ../common/secrets.nix
+    ../common/secrets
   ];
 
   boot.loader.systemd-boot.enable = true;

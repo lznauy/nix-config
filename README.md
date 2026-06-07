@@ -52,7 +52,7 @@ home/            → 用户层配置
   stylix/          主题
   xdg/             MIME、自启动
 pkgs/            → 自定义包
-secrets/         → agenix 密钥
+secrets/         → sops-nix 密钥
 ```
 
 ### 系统维护
@@ -133,7 +133,7 @@ Stylix 采用 `autoEnable = false` 策略，仅对显式声明的目标生效（
 
 <br/>
 
-使用 [agenix](https://github.com/ryantm/agenix) 管理敏感配置，密钥定义在 `secrets/secrets.nix`，主机层和用户层分别通过 `hosts/*/secrets.nix` 和 `home/base/secrets.nix` 引用。
+使用 [sops-nix](https://github.com/Mic92/sops-nix) 管理敏感配置，密钥定义在 `secrets/secrets.yaml`，通过 `hosts/common/secrets/` 下的模板文件渲染到各工具配置。
 
 </details>
 
@@ -143,6 +143,6 @@ Stylix 采用 `autoEnable = false` 策略，仅对显式声明的目标生效（
 
 **Tech Stack**
 
-`NixOS` · `Niri` · `Noctalia Shell` · `Fish` · `Nixvim` · `Stylix` · `Claude Code` · `OpenCode` · `agenix` · `Docker` · `K3s`
+`NixOS` · `Niri` · `Noctalia Shell` · `Fish` · `Nixvim` · `Stylix` · `Claude Code` · `OpenCode` · `sops-nix` · `Docker` · `K3s`
 
 </div>
