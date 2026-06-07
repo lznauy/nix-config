@@ -124,11 +124,11 @@ in
         inner_color = "rgba(${colors.base01}, 0.6)";
         font_color = "rgb(${colors.base05})";
         font_family = "JetBrains Mono Nerd Font";
-        placeholder_text = ''<i><span foreground="#${colors.base03}">请输入密码...</span></i>'';
+        placeholder_text = "请输入密码...";
         hide_input = false;
         check_color = "rgba(${colors.base0B}, 1.0)";
         fail_color = "rgba(${colors.base08}, 1.0)";
-        fail_text = ''<i><span foreground="#${colors.base08}">$FAIL (尝试 $ATTEMPTS 次)</span></i>'';
+        fail_text = "$FAIL (尝试 $ATTEMPTS 次)";
         position = "0, 150";
         halign = "center";
         valign = "center";
