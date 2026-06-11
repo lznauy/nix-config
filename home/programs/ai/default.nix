@@ -34,5 +34,6 @@ in
   home.packages = [
     pkgs.mcp-nixos
     llm-agents.omp
+    llm-agents.reasonix
   ];
 }

@@ -5,5 +5,6 @@
     ./omp.nix
     ./opencode.nix
     ./claude.nix
+    ./reasonix.nix
   ];
 }
