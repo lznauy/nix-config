@@ -44,6 +44,7 @@
 
   home.packages = with pkgs; [
     gifski # 高质量 GIF 编码器
+    libwebp # WebP 图像格式工具集(cwebp/dwebp/gif2webp)
     ffmpeg # 多媒体处理框架
     openssl # 加密库与命令行工具
 
