@@ -53,7 +53,9 @@
     libcaca # 文本模式图形渲染库
     yq # YAML/TOML 命令行处理器
     jq # JSON 命令行处理器
+    zip # ZIP 压缩工具
     unzip # ZIP 解压工具
+    p7zip # 7z 压缩/解压工具
     duf # 磁盘用量可视化工具
     iotop # I/O 监控工具
     cloc # 代码行数统计工具
