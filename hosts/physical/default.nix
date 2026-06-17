@@ -36,6 +36,11 @@
   services.power-profiles-daemon.enable = true;
   virtualisation.docker.enable = true;
 
+  # 指纹识别
+  services.fprintd.enable = true;
+  security.pam.services.login.fprintAuth = true;
+  security.pam.services.sudo.fprintAuth = true;
+
   users.users.lznauy = {
     isNormalUser = true;
     extraGroups = [

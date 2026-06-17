@@ -9,14 +9,11 @@
 
   programs.nixvim = {
     enable = true;
-
     defaultEditor = true;
-
     viAlias = true;
     vimAlias = true;
-
     # Leader key
-    leader = " ";
+    globals.mapleader = " ";
 
     # Options
     opts = {
@@ -49,27 +46,27 @@
         };
       };
       web-devicons.enable = true;
-      startupify.enable = true;
+      startify.enable = true;
       neo-tree.enable = true;
       vim-surround.enable = true;
       gitsigns.enable = true;
       telescope.enable = true;
       treesitter = {
         enable = true;
-        ensureInstalled = [
-          "lua"
-          "bash"
-          "python"
-          "vim"
-          "vimdoc"
-          "nix"
-          "go"
-          "javascript"
-          "typescript"
-          "tsx"
-          "json"
-          "html"
-          "css"
+        grammarPackages = with pkgs.vimPlugins.nvim-treesitter.builtGrammars; [
+          lua
+          bash
+          python
+          vim
+          vimdoc
+          nix
+          go
+          javascript
+          typescript
+          tsx
+          json
+          html
+          css
         ];
         highlight = {
           enable = true;

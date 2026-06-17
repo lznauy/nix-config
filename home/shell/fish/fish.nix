@@ -3,7 +3,10 @@
 {
   home.packages = [ pkgs.starship ]; # 跨 shell 美化提示符
 
-  xdg.configFile."starship.toml".source = ./starship.toml;
+  xdg.configFile."starship.toml" = {
+    source = ./starship.toml;
+    force = true;
+  };
 
   programs.fish = {
     enable = true;
@@ -12,7 +15,7 @@
       set fish_greeting
     '';
     functions = {
-      claude = {
+      claude-ds = {
         body = "command claude --settings ~/.claude/settings-deepseek.json $argv";
       };
       claude-mimo = {

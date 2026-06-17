@@ -79,8 +79,7 @@
                 wayscrollshot = final.callPackage ./pkgs/wayscrollshot.nix { };
                 # 测试环境有问题，跳过
                 pipx = prev.pipx.overridePythonAttrs { doCheck = false; };
-                vips-compat = final.callPackage ./home/programs/qq/vips-compat.nix { };
-                # QQNT — 版本锁定 + vips_g_once 兼容修复
+                # QQNT — 版本锁定
                 qq = final.callPackage ./home/programs/qq/package.nix { qq = prev.qq; };
               })
             ];
@@ -108,20 +107,23 @@
       };
     in
     {
-      # VMware 桌面机
-      nixosConfigurations.nixos = mkHost [
-        ./hosts/vmware/hardware.nix
-        ./hosts/vmware/default.nix
-      ];
+      nixosConfigurations =
+        {
+          # VMware 桌面机
+          nixos = mkHost [
+            ./hosts/vmware/hardware.nix
+            ./hosts/vmware/default.nix
+          ];
 
-      # 物理机
-      nixosConfigurations.physical = mkHost [
-        ./hosts/physical/hardware.nix
-        ./hosts/physical/default.nix
-      ];
+          # 物理机
+          physical = mkHost [
+            ./hosts/physical/hardware.nix
+            ./hosts/physical/default.nix
+          ];
+        }
+        // (import ./hosts/virtual/default.nix { inherit nixpkgs; });
 
       devShells.x86_64-linux = import ./home/programs/devshell/default.nix { pkgs = nixpkgs.legacyPackages.x86_64-linux; };
 
-    }
-    // (import ./hosts/virtual/default.nix { inherit nixpkgs; });
+    };
 }

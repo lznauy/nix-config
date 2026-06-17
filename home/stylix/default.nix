@@ -3,10 +3,6 @@ let
   colorScheme = rec {
     custom = true;
     name = "midnight";
-    # 自定义方案: midnight
-    # 内置方案(需改为 custom = false): catppuccin-mocha/frappe/latte/macchiato、
-    # tokyo-night-moon、solarized-dark、rose-pine-moon、nord、darcula、
-    # gruvbox-dark-medium、monokai、moonlight、kanagawa
     path =
       if custom then
         ./colorschemes/${name}.yaml
@@ -49,12 +45,7 @@ in
     };
 
     targets = {
-      kitty.enable = true;
       nixvim.enable = true;
-      fuzzel.enable = true;
-      noctalia-shell.enable = false; # 与自定义布局设置冲突
-      starship.enable = false; # 使用自定义 toml 配置
-      hyprlock.enable = false; # 手动配置更灵活
     };
   };
 }

@@ -33,7 +33,6 @@
     ./programs/zed.nix
     ./programs/asciinema.nix
     ./programs/btm.nix
-    ./programs/cava.nix
     ./programs/devshell/home.nix
     ./programs/fastfetch.nix
     ./programs/git.nix
@@ -88,6 +87,7 @@
     wayscrollshot # Wayland 滚动截图工具
     upx # 可执行文件压缩工具
     blueman # 蓝牙管理 GUI
+    cava # 终端音量显示
     pulseaudio # PulseAudio 客户端工具 (pactl, parec)
   ];
 }
