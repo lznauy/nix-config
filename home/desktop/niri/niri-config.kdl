@@ -18,6 +18,22 @@ window-rule {
 }
 
 window-rule {
+    match app-id=r#"^(org\.telegram\.desktop|telegram-desktop)$"#
+    opacity 0.92
+    geometry-corner-radius 12
+    clip-to-geometry true
+    draw-border-with-background false
+}
+
+window-rule {
+    match app-id=r#"^(dev\.zed\.Zed|zed)$"#
+    opacity 0.95
+    geometry-corner-radius 12
+    clip-to-geometry true
+    draw-border-with-background false
+}
+
+window-rule {
     match app-id=r#"^clipse$"#
     open-floating true
     default-column-width { proportion 0.35; }

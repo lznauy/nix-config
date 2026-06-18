@@ -9,6 +9,7 @@ in
 {
   programs.noctalia = {
     enable = true;
+    validateConfig = false;
 
     settings = {
       # ── Shell ─────────────────────────────────────────────
@@ -21,8 +22,8 @@ in
         ui_scale = 1.1;
         # 剪贴板自动粘贴: "off" 关闭 / "on" 开启
         clipboard_auto_paste = "off";
-        # 着色应用图标（dock/托盘/任务栏/启动器等）以匹配主题
-        app_icon_colorize = true;
+        # 保留应用原始彩色图标；开启会按主题重着色，容易让图标变成灰色/单色
+        app_icon_colorize = false;
       };
 
       # ── Bar ───────────────────────────────────────────────
@@ -132,8 +133,8 @@ in
         directory = wallpaperDir;
       };
       wallpaper.automation = {
-        # 启用自动切换壁纸
-        enabled = true;
+        # 禁用自动切换壁纸
+        enabled = false;
         # 切换顺序: "random" 随机 / "sequential" 顺序
         order = "random";
       };
@@ -176,13 +177,13 @@ in
         source = "wallpaper";
         # 壁纸取色方案: m3-tonal-spot (Material 3 色调点方案)
         wallpaper_scheme = "m3-tonal-spot";
-        # 应用配色模板 — 已安装且有模板的应用
+        # 应用配色模板 — Noctalia v5.0.0 的原生模板系统读取此配置
         templates = {
-          # 内置模板
           enable_builtin_templates = true;
           builtin_ids = [
             "cava"
             "kitty"
+            "starship"
             "gtk3"
             "gtk4"
             "qt"
