@@ -41,6 +41,7 @@
   environment.systemPackages = with pkgs; [
     kubectl
     k9s
+    kubernetes-helm
   ];
 
   environment.variables.KUBECONFIG = "/etc/rancher/k3s/k3s.yaml";

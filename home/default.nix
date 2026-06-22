@@ -61,6 +61,7 @@
     doggo # 现代 DNS 查询工具
     quien # 更好的 WHOIS 查询工具
     dive # Docker 镜像层分析工具
+    kubernetes-helm # Kubernetes 包管理器
     lsof # 查看打开文件工具
     wget # HTTP 下载工具
     posting # postman终端版
