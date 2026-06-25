@@ -51,7 +51,7 @@
           "JetBrainsMono Nerd Font"
         ];
         serif = [ "Noto Serif CJK SC" ];
-        sansSerif = [ "Noto Sans CJK SC" ];
+        sansSerif = [ "WenQuanYi Micro Hei" ];
         emoji = [ "Noto Color Emoji" ];
       };
       localConf = ''

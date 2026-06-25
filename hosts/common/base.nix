@@ -31,12 +31,16 @@
     "electron-39.8.10"
   ];
 
+  services.flatpak.enable = true;
+
   environment.systemPackages = with pkgs; [
     wget
     git
     curl
     htop
     vim
+    flatpak
+    flatpak-builder
   ];
 
   services.openssh = {

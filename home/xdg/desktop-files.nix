@@ -49,6 +49,25 @@
     '';
   };
 
+  xdg.dataFile."applications/wemeetapp.desktop".source = pkgs.writeTextFile {
+    name = "wemeetapp.desktop";
+    text = ''
+      [Desktop Entry]
+      Name=腾讯会议
+      Name[zh_CN]=腾讯会议
+      Name[en]=Tencent Meeting
+      Comment=腾讯会议 Linux 版
+      Comment[zh_CN]=腾讯会议 Linux 版
+      Exec=wemeet-xwayland %u
+      Icon=wemeet
+      Type=Application
+      Terminal=false
+      Categories=AudioVideo;Network;
+      MimeType=x-scheme-handler/wemeet;
+      StartupWMClass=wemeetapp
+    '';
+  };
+
   xdg.dataFile."applications/kbd-layout-viewer5.desktop".source = pkgs.writeTextFile {
     name = "kbd-layout-viewer5.desktop";
     text = ''
