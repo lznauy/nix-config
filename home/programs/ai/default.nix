@@ -25,5 +25,6 @@ in
     llm-agents.omp
     llm-agents.reasonix
     llm-agents.cc-switch-cli
+    llm-agents.hermes-agent
   ];
 }
