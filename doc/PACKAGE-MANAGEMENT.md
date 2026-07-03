@@ -180,7 +180,7 @@ stdenv.mkDerivation {
 
 **优点**：完全声明式，可复现，可提交 nixpkgs。
 **缺点**：需要处理依赖和 hash，维护成本高。
-**已有案例**：`wayscrollshot`（见下文实战记录）。
+**已有案例**：`mark-shot`（通过 flake input 引入，见下文实战记录）。
 
 ---
 
@@ -316,27 +316,20 @@ nix hash to-sri --type sha256 <返回的hash>
 
 ---
 
-## 实战记录：wayscrollshot
+## 实战记录：wayscrollshot → mark-shot
 
-**问题**：Wayland 滚动截图工具，不在 nixpkgs，仓库无 Cargo.lock。
+**原 wayscrollshot**：Wayland 滚动截图工具（Rust + OpenCV），上游无 Cargo.lock，需本地生成并注入，维护成本高。2026-07 替换为同作者的 `mark-shot`。
 
-**决策路径**：
+**新方案 mark-shot**：Qt 6 / C++ 截图标注工具，上游有 `flake.nix`，通过 flake input 直接引入，无需维护自定义 derivation。
 
-1. 上游有 flake？→ 没有
-2. NUR 有现成包？→ 没有
-3. 有预编译二进制？→ 有，但链接 OpenCV 4.6（soname .so.406），系统是 4.13（.so.413），版本不兼容
-4. autoPatchelfHook？→ soname 不匹配，失败
-5. 最终方案 C：源码构建
-   - 本地 `cargo generate-lockfile` 生成 `Cargo.lock`
-   - 保存到 `pkgs/wayscrollshot-Cargo.lock`
-   - `postUnpack` 注入源码
-   - 设置 `OPENCV_LINK_PATHS` 使用系统 OpenCV
-   - 设置 `LIBCLANG_PATH` 指向 `llvmPackages.libclang.lib`
+**迁移过程**：
+1. 删除 `pkgs/wayscrollshot.nix`、`pkgs/wayscrollshot-Cargo.lock`
+2. 添加 `mark-shot.url = "github:jswysnemc/mark-shot"` flake input
+3. overlay 中 `mark-shot = mark-shot.packages.${system}.default`
+4. 更新 `home/default.nix`、`KEYBINDINGS.md`
 
 **涉及文件**：
-- `pkgs/wayscrollshot.nix` — derivation
-- `pkgs/wayscrollshot-Cargo.lock` — 预生成的锁文件
-- `flake.nix` — overlay 引入
+- `flake.nix` — flake input + overlay
 - `home/default.nix` — home.packages 引用
 
 ---

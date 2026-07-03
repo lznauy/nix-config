@@ -60,6 +60,7 @@
     cloc # 代码行数统计工具
     doggo # 现代 DNS 查询工具
     quien # 更好的 WHOIS 查询工具
+    witr # 进程溯源工具 — why is this running?
     wemeet # 腾讯会议
     dive # Docker 镜像层分析工具
     kubernetes-helm # Kubernetes 包管理器
@@ -86,7 +87,7 @@
     hugo # 静态网站生成器
     mkcert # 本地 HTTPS 证书生成工具
     comma # 使用逗号临时运行未安装的程序
-    wayscrollshot # Wayland 滚动截图工具
+    mark-shot # 截图标注工具
     upx # 可执行文件压缩工具
     blueman # 蓝牙管理 GUI
     cava # 终端音量显示

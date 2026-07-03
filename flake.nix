@@ -24,10 +24,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    quien = {
-      url = "github:retlehs/quien";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    quien.url = "github:retlehs/quien";
 
     stylix = {
       url = "github:danth/stylix";
@@ -40,6 +37,10 @@
     };
 
     llm-agents.url = "github:numtide/llm-agents.nix";
+
+    witr.url = "github:pranshuparmar/witr";
+
+    mark-shot.url = "github:jswysnemc/mark-shot";
 
   };
 
@@ -54,6 +55,8 @@
       sops-nix,
       quien,
       stylix,
+      witr,
+      mark-shot,
       ...
     }@inputs:
     let
@@ -72,11 +75,12 @@
               claude-code.overlays.default
               inputs.nur.overlays.default
               (final: prev: {
-                # vendorHash 与上游不匹配，手动覆盖
-                quien = quien.packages.${prev.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
-                  vendorHash = "sha256-aErscLglpLDXH5jxEt6KFDlBH2JjtXDcX4J3YrL5ouI=";
+                quien = quien.packages.${prev.stdenv.hostPlatform.system}.default;
+                witr = witr.packages.${prev.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
+                  # launchd 测试是 macOS 专属，proc 文件锁测试在沙盒中失败
+                  doCheck = false;
                 });
-                wayscrollshot = final.callPackage ./pkgs/wayscrollshot.nix { };
+                mark-shot = mark-shot.packages.${prev.stdenv.hostPlatform.system}.default;
                 # 测试环境有问题，跳过
                 pipx = prev.pipx.overridePythonAttrs { doCheck = false; };
                 # QQNT — 版本锁定

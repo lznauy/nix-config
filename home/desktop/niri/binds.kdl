@@ -133,7 +133,7 @@ binds {
     // 截图
     // -------------------------
     Mod+Shift+G { spawn-sh "grim -g \"$(slurp)\" - | wl-copy"; }
-    Mod+Shift+S { spawn "wayscrollshot"; }
+    Mod+Shift+S { spawn-sh "env MARK_SHOT_NIRI_OFFSET_Y=66 mark-shot"; }
 
     // -------------------------
     // 其他
