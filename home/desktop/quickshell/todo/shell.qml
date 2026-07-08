@@ -14,12 +14,19 @@ ShellRoot {
     property real panelScale: 0.95
     property real panelY: 15
 
-    property string dataFile: Quickshell.env("HOME") + "/.local/share/quickshell/todos.json"
+    property string dataDir: Quickshell.env("HOME") + "/.local/share/quickshell"
+    property string dataFile: dataDir + "/todos.json"
     property var todos: []
 
     Component.onCompleted: {
+        ensureDirProcess.running = true
         loadTimer.start()
         enterAnimation.start()
+    }
+
+    Process {
+        id: ensureDirProcess
+        command: ["mkdir", "-p", root.dataDir]
     }
 
     // ── Animations ──────────────────────────────────────────
@@ -37,7 +44,7 @@ ShellRoot {
         NumberAnimation { target: root; property: "panelScale"; to: 0.95; duration: 120; easing.type: Easing.InCubic }
         NumberAnimation { target: root; property: "panelY"; to: -10; duration: 120; easing.type: Easing.InCubic }
         onFinished: {
-            if (savePending) { quitWaitTimer.start() }
+            if (writeTmpProcess.running || saveQueued || saveTimer.running) { quitWaitTimer.start() }
             else { Qt.quit() }
         }
     }
@@ -49,7 +56,13 @@ ShellRoot {
         property int elapsed: 0
         onTriggered: {
             elapsed += 30
-            if (!root.savePending || elapsed >= 3000) { stop(); Qt.quit() }
+            if (!writeTmpProcess.running && (root.saveQueued || saveTimer.running)) {
+                root.flushSave()
+            }
+            if ((!writeTmpProcess.running && !root.saveQueued && !saveTimer.running) || elapsed >= 3000) {
+                stop()
+                Qt.quit()
+            }
         }
     }
 
@@ -76,31 +89,59 @@ ShellRoot {
         }
     }
 
-    property bool savePending: false
-    property bool saveDirty: false
+    // Debounced save: accumulates rapid changes, writes once after
+    // `delay` ms of inactivity. Uses a temp file + rename for atomicity.
+    property int saveDelay: 300
+    property string tmpFile: root.dataFile + ".tmp"
+    property bool saveQueued: false
 
-    Process {
-        id: saveProcess
-        command: ["tee", root.dataFile]
-        stdinEnabled: true
-        onStarted: {
-            root.saveDirty = false
-            write(JSON.stringify({todos: root.todos}, null, 2))
-            closeStdin()
-        }
-        onExited: {
-            root.savePending = false
-            if (root.saveDirty) { root.savePending = true; running = true }
-        }
+    Timer {
+        id: saveTimer
+        interval: root.saveDelay
+        repeat: false
+        onTriggered: root.flushSave()
     }
 
     function saveData() {
-        saveDirty = true
-        if (!savePending) { savePending = true; saveProcess.running = true }
+        saveQueued = true
+        saveTimer.restart()
+    }
+
+    function flushSave() {
+        saveTimer.stop()
+        if (writeTmpProcess.running) {
+            return
+        }
+        if (!saveQueued) return
+        var json = JSON.stringify({todos: root.todos}, null, 2)
+        writeTmpProcess.writeCmd = json
+        saveQueued = false
+        writeTmpProcess.stdinEnabled = true
+        writeTmpProcess.running = true
+    }
+
+    Process {
+        id: writeTmpProcess
+        property string writeCmd: ""
+        command: ["sh", "-c", "mkdir -p \"$1\" && cat > \"$2\" && mv \"$2\" \"$3\"", "qs-todo-save", root.dataDir, root.tmpFile, root.dataFile]
+        stdinEnabled: true
+        onStarted: {
+            writeTmpProcess.write(writeCmd)
+            writeTmpProcess.stdinEnabled = false
+        }
+        onExited: {
+            var code = writeTmpProcess.exitCode
+            if (code !== 0) {
+                saveQueued = true
+                console.warn("[todo] save failed (exit " + code + ")")
+            } else if (saveQueued || saveTimer.running) {
+                root.flushSave()
+            }
+        }
     }
 
     function closeWithAnimation() {
-        saveData()
+        flushSave()
         exitAnimation.start()
     }
 
