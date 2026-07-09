@@ -78,10 +78,14 @@ in
 
   programs.fish = {
     enable = true;
-    shellInit = "set -x TERM xterm-256color";
+    shellInit = ''
+      set -x TERM xterm-256color
+      set -gx NPM_CONFIG_PREFIX "$HOME/.local/share/npm"
+    '';
     interactiveShellInit = ''
       set fish_greeting
       fish_add_path "${config.home.homeDirectory}/.local/share/go/bin"
+      fish_add_path "${config.home.homeDirectory}/.local/share/npm/bin"
     '';
     functions = {
       claude-ds = {
