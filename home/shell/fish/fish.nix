@@ -81,6 +81,7 @@ in
     shellInit = "set -x TERM xterm-256color";
     interactiveShellInit = ''
       set fish_greeting
+      fish_add_path "${config.home.homeDirectory}/.local/share/go/bin"
     '';
     functions = {
       claude-ds = {
