@@ -92,5 +92,6 @@
     blueman # 蓝牙管理 GUI
     cava # 终端音量显示
     pulseaudio # PulseAudio 客户端工具 (pactl, parec)
+    llmfit # 查看机器配置能跑哪些llm
   ];
 }
