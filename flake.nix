@@ -89,6 +89,15 @@
                 mark-shot = mark-shot.packages.${prev.stdenv.hostPlatform.system}.default;
                 # 测试环境有问题，跳过
                 pipx = prev.pipx.overridePythonAttrs { doCheck = false; };
+                niri = prev.niri.overrideAttrs (old: {
+                  patches = (old.patches or [ ]) ++ [
+                    (prev.fetchpatch {
+                      name = "niri-shm-sharing-26.04.patch";
+                      url = "https://github.com/wrvsrx/niri/compare/tag_support-shm-sharing_4~19..tag_support-shm-sharing_4.patch";
+                      sha256 = "15czbxdvcmm7fp4w3d1n463kpg7l6mbjh1msm6176296nn7g7dic";
+                    })
+                  ];
+                });
                 # QQNT — 版本锁定
                 qq = final.callPackage ./home/programs/qq/package.nix { qq = prev.qq; };
               })
