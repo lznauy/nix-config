@@ -38,6 +38,7 @@
     ./programs/git.nix
     ./programs/nh.nix
     ./programs/nixvim/default.nix
+    ./programs/open-design.nix
     ./programs/system-tui.nix
   ];
 

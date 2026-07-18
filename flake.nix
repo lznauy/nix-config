@@ -42,6 +42,12 @@
 
     mark-shot.url = "github:jswysnemc/mark-shot";
 
+    open-design = {
+      url = "github:nexu-io/open-design";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.home-manager.follows = "home-manager";
+    };
+
   };
 
   outputs =
@@ -99,6 +105,7 @@
             inputs.nixvim.homeModules.nixvim
             inputs.noctalia.homeModules.default
             inputs.stylix.homeModules.stylix
+            inputs.open-design.homeManagerModules.default
           ];
 
           home-manager.users.lznauy = import ./home/default.nix;
