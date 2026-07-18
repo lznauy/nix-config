@@ -12,7 +12,7 @@ environment {
 window-rule {
     match app-id=r#"^kitty$"#
     opacity 0.95
-    geometry-corner-radius 12
+    geometry-corner-radius 10
     clip-to-geometry true
     draw-border-with-background false
 }
@@ -20,7 +20,7 @@ window-rule {
 window-rule {
     match app-id=r#"^(org\.telegram\.desktop|telegram-desktop)$"#
     opacity 0.92
-    geometry-corner-radius 12
+    geometry-corner-radius 10
     clip-to-geometry true
     draw-border-with-background false
 }
@@ -28,7 +28,7 @@ window-rule {
 window-rule {
     match app-id=r#"^(dev\.zed\.Zed|zed)$"#
     opacity 0.95
-    geometry-corner-radius 12
+    geometry-corner-radius 10
     clip-to-geometry true
     draw-border-with-background false
 }
@@ -71,14 +71,14 @@ layout {
     default-column-width { proportion 0.5; }
 
     focus-ring {
-        width 4
+        width 2
         active-color "#7fc8ff"
         inactive-color "#505050"
     }
 
     border {
         off
-        width 4
+        width 2
         active-color "#ffc87f"
         inactive-color "#505050"
         urgent-color "#9b0000"
@@ -107,7 +107,7 @@ screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
 
 // Noctalia
 window-rule {
-    geometry-corner-radius 20
+    geometry-corner-radius 16
     clip-to-geometry true
 }
 
