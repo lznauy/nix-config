@@ -1,6 +1,15 @@
 {
   description = "lznauy's NixOS";
 
+  nixConfig = {
+    extra-substituters = [
+      "https://noctalia.cachix.org"
+    ];
+    extra-trusted-public-keys = [
+      "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4="
+    ];
+  };
+
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
     claude-code.url = "github:sadjow/claude-code-nix";
@@ -16,7 +25,6 @@
 
     noctalia = {
       url = "github:noctalia-dev/noctalia-shell";
-      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     sops-nix = {
@@ -74,8 +82,14 @@
             nixpkgs.hostPlatform = "x86_64-linux";
             nixpkgs.config.allowUnfree = true;
             nix.settings = {
-              extra-substituters = [ "https://cache.numtide.com" ];
-              extra-trusted-public-keys = [ "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g=" ];
+              extra-substituters = [
+                "https://cache.numtide.com"
+                "https://noctalia.cachix.org"
+              ];
+              extra-trusted-public-keys = [
+                "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="
+                "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4="
+              ];
             };
             nixpkgs.overlays = [
               claude-code.overlays.default

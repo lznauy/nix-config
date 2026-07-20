@@ -26,5 +26,6 @@ in
     llm-agents.reasonix
     llm-agents.cc-switch-cli
     llm-agents.hermes-agent
+    llm-agents.kimi-code
   ];
 }
