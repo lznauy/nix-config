@@ -70,6 +70,12 @@
     posting # postman终端版
     gh-dash # github终端版
     pipx # Python CLI 工具隔离安装器
+    gping # 图形化 ping 工具
+    cmd-wrapped # 生成过去一年中的命令行活跃分布
+    sampler # 采样器：github.com/sqshq/sampler
+    neohtop #rust写的gui界面htop
+    hl-log-viewer # 日志高亮查看器
+    snitch # 终端进程监控工具
 
     tree # 目录树展示工具
     fd # 快速文件查找工具
@@ -89,6 +95,7 @@
     mkcert # 本地 HTTPS 证书生成工具
     comma # 使用逗号临时运行未安装的程序
     mark-shot # 截图标注工具
+    surge # TUI 下载管理器
     upx # 可执行文件压缩工具
     blueman # 蓝牙管理 GUI
     cava # 终端音量显示

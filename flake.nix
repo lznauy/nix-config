@@ -50,6 +50,8 @@
 
     mark-shot.url = "github:jswysnemc/mark-shot";
 
+    surge.url = "github:SurgeDM/Surge";
+
     open-design = {
       url = "github:nexu-io/open-design";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -71,6 +73,7 @@
       stylix,
       witr,
       mark-shot,
+      surge,
       ...
     }@inputs:
     let
@@ -101,6 +104,10 @@
                   doCheck = false;
                 });
                 mark-shot = mark-shot.packages.${prev.stdenv.hostPlatform.system}.default;
+                # 上游 flake 的 vendorHash 已过期，修正为实际值
+                surge = surge.packages.${prev.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
+                  vendorHash = "sha256-uZrSOcwfXJ9LwuHi+0wIjPBIsAdULU60GbWrJNV923s=";
+                });
                 # 测试环境有问题，跳过
                 pipx = prev.pipx.overridePythonAttrs { doCheck = false; };
                 niri = prev.niri.overrideAttrs (old: {
