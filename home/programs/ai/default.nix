@@ -16,8 +16,10 @@ in
   };
 
   # Codex 配置路径为 ~/.codex/
+  # 使用 llm-agents 的包（nixpkgs 官方源更新太慢）
   programs.codex = {
     enable = true;
+    package = llm-agents.codex;
   };
 
   home.packages = [

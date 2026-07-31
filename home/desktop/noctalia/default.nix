@@ -71,7 +71,7 @@ in
         # 垂直条上的时间格式
         vertical_format = "{:%H:%M}";
         # 鼠标悬停提示的格式
-        tooltip_format = "{:%H:%M} %a, %b %d";
+        tooltip_format = "{:%H:%M %a, %b %d}";
       };
 
       widget.active_window = {
