@@ -8,6 +8,12 @@ environment {
     QS_ICON_THEME "WhiteSur-dark"
 }
 
+// 外接显示器：覆盖 EDID 错误标记的 720p 首选模式
+output "HDMI-A-1" {
+    mode "1920x1080@60.000"
+    scale 1
+}
+
 // 窗口规则
 window-rule {
     match app-id=r#"^kitty$"#
