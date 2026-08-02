@@ -8,14 +8,16 @@ let
   node = import ./shells/node.nix { inherit pkgs; };
   go = import ./shells/go.nix { inherit pkgs; };
   rust = import ./shells/rust.nix { inherit pkgs; };
+  zig = import ./shells/zig.nix { inherit pkgs; };
 
   # 定义 shell 组合
   shells = {
-    default = [ base python node go rust ];
+    default = [ base python node go rust zig ];
     python = [ base python ];
     node = [ base node ];
     go = [ base go ];
     rust = [ base rust ];
+    zig = [ base zig ];
   };
 
   # 构建 shell：用 inputsFrom 合并模块

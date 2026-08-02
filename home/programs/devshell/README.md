@@ -19,7 +19,9 @@ home/programs/devshell/
     ├── base.nix   # 基础编译工具（gcc、gnumake）
     ├── python.nix # Python 环境
     ├── node.nix   # Node.js 环境
-    └── go.nix     # Go 环境
+    ├── go.nix     # Go 环境
+    ├── rust.nix   # Rust 环境
+    └── zig.nix    # Zig 环境
 ```
 
 ## 使用方式
@@ -27,10 +29,11 @@ home/programs/devshell/
 ### nix develop（临时环境）
 
 ```bash
-nix develop .#default     # 全部环境（base + python + node + go）
+nix develop .#default     # 全部环境（base + python + node + go + rust + zig）
 nix develop .#python      # Python + 基础编译工具
 nix develop .#go          # Go + 基础编译工具
 nix develop .#node        # Node.js + 基础编译工具
+nix develop .#zig         # Zig + 基础编译工具
 exit                      # 退出，环境消失
 ```
 
