@@ -18,12 +18,16 @@ in
         lang = "zh-CN";
         # 全局字体
         font_family = "Noto Sans CJK SC";
-        # UI 整体缩放比例（1.0 = 100%）
-        ui_scale = 1.1;
         # 剪贴板自动粘贴: "off" 关闭 / "on" 开启
         clipboard_auto_paste = "off";
         # 保留应用原始彩色图标；开启会按主题重着色，容易让图标变成灰色/单色
         app_icon_colorize = false;
+      };
+
+      # ── Accessibility ─────────────────────────────────────
+      accessibility = {
+        # UI 整体缩放比例（1.0 = 100%）
+        ui_scale = 1.1;
       };
 
       # ── Bar ───────────────────────────────────────────────
@@ -84,8 +88,8 @@ in
       };
 
       widget.workspaces = {
-        # 标签模式: "none" 不显示文字 / "id" 显示编号 / "name" 显示名称
-        display = "none";
+        # 标签模式: show_labels=false 不显示文字 / label_source = "id" 显示编号 / "name" 显示名称
+        show_labels = false;
         # 空工作区颜色: "secondary" 次要色
         empty_color = "secondary";
         # 当前聚焦工作区颜色: "primary" 主色
@@ -108,8 +112,10 @@ in
       widget.ram-text = {
         type = "sysmon";
         stat = "ram_pct";
-        display = "text";
-        show_label = true;
+        # 展示形式: "none" 纯文本 / "gauge" 仪表 / "graph" 图表
+        visualization = "none";
+        # 是否显示数值
+        show_value = true;
         label_min_width = 48;
       };
 
