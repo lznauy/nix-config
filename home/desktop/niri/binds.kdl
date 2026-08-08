@@ -8,7 +8,7 @@ binds {
     Mod+T { spawn "kitty"; }
     Mod+Shift+T { spawn "qs-todo"; }
     Mod+D { spawn "fuzzel"; }
-    Mod+Shift+L { spawn "hyprlock"; }
+    Mod+Shift+L { spawn "loginctl" "lock-session"; }
     Mod+O repeat=false { toggle-overview; }
     Mod+Q repeat=false { close-window; }
 

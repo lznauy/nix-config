@@ -13,7 +13,9 @@
     ./base/fcitx5.nix
     ./desktop/niri/default.nix
     ./desktop/noctalia/default.nix
-    ./desktop/hyprlock/default.nix
+    # hyprlock 已停用：与 noctalia v5 内置锁屏竞争 ext-session-lock，
+    # 睡眠时 noctalia 重复请求锁屏触发 duplicate_output(code=3) 被 niri 杀掉。
+    # 现在由 noctalia 承担锁屏（监听 logind Lock 信号）。
     ./desktop/quickshell/todo
     ./desktop/quickshell/dynamic-island
     ./desktop/fuzzel.nix
