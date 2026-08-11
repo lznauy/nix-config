@@ -12,6 +12,7 @@
     ../common/clash-verge.nix
     ../common/xwayland.nix
     ../common/secrets
+    ./windows-vm.nix
   ];
 
   boot.loader.systemd-boot.enable = true;

@@ -62,6 +62,7 @@
     iotop # I/O 监控工具
     cloc # 代码行数统计工具
     doggo # 现代 DNS 查询工具
+    dnsutils # DNS 查询工具(dig / nslookup / host)
     quien # 更好的 WHOIS 查询工具
     witr # 进程溯源工具 — why is this running?
     wemeet # 腾讯会议
