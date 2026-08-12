@@ -12,6 +12,7 @@
     ../common/clash-verge.nix
     ../common/xwayland.nix
     ../common/secrets
+    ./virtualisation.nix
     ./windows-vm.nix
   ];
 

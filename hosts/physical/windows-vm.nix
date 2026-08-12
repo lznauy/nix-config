@@ -87,7 +87,7 @@ let
         exit 1
       fi
 
-      echo "Creating ${vmName}: 4 vCPU, 6 GiB RAM, 64 GiB sparse disk."
+      echo "Creating ${vmName}: 4 vCPU, 5 GiB RAM, 80 GiB sparse disk."
       echo "Windows ISO: $iso_path"
       echo "VirtIO drivers: default/${driverVolume}"
 
@@ -97,20 +97,22 @@ let
         --description "Windows 11 Pro lightweight office VM" \
         --osinfo win11 \
         --machine q35 \
-        --memory 6144 \
+        --memory 5120 \
         --vcpus sockets=1,cores=2,threads=2 \
         --cpu host-passthrough \
         --boot cdrom,hd,loader=${ovmfCode},loader.readonly=yes,loader.type=pflash,nvram.template=${ovmfVars},nvram.templateFormat=raw \
         --features smm=on \
         --tpm backend.type=emulator,backend.version=2.0,model=tpm-crb \
         --rng /dev/urandom \
-        --disk pool=default,size=64,format=qcow2,bus=virtio,cache=none,discard=unmap \
+        --iothreads 1 \
+        --disk pool=default,size=80,format=qcow2,bus=virtio,cache=none,driver.io=native,driver.discard=unmap,driver.detect_zeroes=unmap,driver.iothread=1 \
         --disk "path=$iso_path,device=cdrom,bus=sata,readonly=on" \
         --disk vol=default/${driverVolume},device=cdrom,bus=sata,readonly=on \
         --network network=default,model=virtio \
         --graphics spice \
         --video virtio \
         --channel spicevmc \
+        --channel unix,target.type=virtio,target.name=org.qemu.guest_agent.0 \
         --sound ich9 \
         --controller usb,model=qemu-xhci \
         --autoconsole graphical
@@ -120,6 +122,7 @@ let
   win11VmFinishInstall = pkgs.writeShellApplication {
     name = "win11-vm-finish-install";
     runtimeInputs = with pkgs; [
+      gawk
       libvirt
       virt-manager
     ];
@@ -158,70 +161,61 @@ let
         changed=yes
       fi
 
-      has_installer_media() {
+      has_media() {
+        local target="$1"
+        shift
         "''${virsh_cmd[@]}" domblklist ${vmName} "$@" --details \
-          | awk '$2 == "cdrom" && $3 == "sda" && $4 != "-" { found = 1 } END { exit !found }'
+          | awk -v target="$target" '$2 == "cdrom" && $3 == target && $4 != "-" { found = 1 } END { exit !found }'
       }
 
       vm_state="$("''${virsh_cmd[@]}" domstate ${vmName})"
-      if [ "$vm_state" = "running" ]; then
-        live_has_media=no
-        config_has_media=no
-        if has_installer_media; then live_has_media=yes; fi
-        if has_installer_media --inactive; then config_has_media=yes; fi
 
-        if [ "$live_has_media" = "yes" ] && [ "$config_has_media" = "yes" ]; then
-          "''${virsh_cmd[@]}" change-media ${vmName} sda --eject --live --config
-          changed=yes
-          reboot_needed=yes
-        elif [ "$live_has_media" = "yes" ]; then
-          "''${virsh_cmd[@]}" change-media ${vmName} sda --eject --live
-          changed=yes
-          reboot_needed=yes
-        elif [ "$config_has_media" = "yes" ]; then
-          "''${virsh_cmd[@]}" change-media ${vmName} sda --eject --config
+      eject_media() {
+        local target="$1"
+
+        if [ "$vm_state" = "running" ]; then
+          local live_has_media=no
+          local config_has_media=no
+          if has_media "$target"; then live_has_media=yes; fi
+          if has_media "$target" --inactive; then config_has_media=yes; fi
+
+          if [ "$live_has_media" = "yes" ] && [ "$config_has_media" = "yes" ]; then
+            "''${virsh_cmd[@]}" change-media ${vmName} "$target" --eject --live --config
+            changed=yes
+            reboot_needed=yes
+          elif [ "$live_has_media" = "yes" ]; then
+            "''${virsh_cmd[@]}" change-media ${vmName} "$target" --eject --live
+            changed=yes
+            reboot_needed=yes
+          elif [ "$config_has_media" = "yes" ]; then
+            "''${virsh_cmd[@]}" change-media ${vmName} "$target" --eject --config
+            changed=yes
+          fi
+        elif has_media "$target" --inactive; then
+          "''${virsh_cmd[@]}" change-media ${vmName} "$target" --eject --config
           changed=yes
         fi
-      else
-        if has_installer_media --inactive; then
-          "''${virsh_cmd[@]}" change-media ${vmName} sda --eject --config
-          changed=yes
-        fi
-      fi
+      }
+
+      # sda is the Windows installer; sdb is the VirtIO driver ISO.
+      eject_media sda
+      eject_media sdb
 
       if [ "$reboot_needed" = "yes" ]; then
         "''${virsh_cmd[@]}" reboot ${vmName}
       fi
 
       if [ "$changed" = "yes" ]; then
-        echo "Windows installer ISO ejected; ${vmName} now boots from its virtual disk."
+        echo "Installation media ejected; ${vmName} now boots from its virtual disk."
       else
-        echo "Nothing to do: ${vmName} already boots from disk and its installer ISO is not mounted."
+        echo "Nothing to do: ${vmName} already boots from disk and its installation media is not mounted."
       fi
     '';
   };
 in
 {
-  programs.virt-manager.enable = true;
-
-  virtualisation.libvirtd = {
-    enable = true;
-    onBoot = "ignore";
-    onShutdown = "shutdown";
-    qemu = {
-      package = pkgs.qemu_kvm;
-      swtpm.enable = true;
-    };
-  };
-
   environment.systemPackages = [
     win11VmCreate
     win11VmFinishInstall
-    pkgs.virt-viewer
-  ];
-
-  users.users.lznauy.extraGroups = [
-    "kvm"
-    "libvirtd"
   ];
 }

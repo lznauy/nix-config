@@ -33,6 +33,7 @@
     ./programs/onlyoffice.nix
     ./programs/wechat.nix
     ./programs/zed.nix
+    ./programs/vscode.nix
     ./programs/asciinema.nix
     ./programs/btm.nix
     ./programs/devshell/home.nix

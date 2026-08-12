@@ -7,10 +7,15 @@
 
 let
   iconThemeName = "WhiteSur-dark";
+  gtkThemeName = "WhiteSur-Dark";
 in
 {
   gtk = {
     enable = true;
+    theme = {
+      name = gtkThemeName;
+      package = pkgs.whitesur-gtk-theme;
+    };
     iconTheme = {
       name = iconThemeName;
       package = pkgs.whitesur-icon-theme;
