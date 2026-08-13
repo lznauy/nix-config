@@ -106,7 +106,7 @@
                 mark-shot = mark-shot.packages.${prev.stdenv.hostPlatform.system}.default;
                 # 上游 flake 的 vendorHash 已过期，修正为实际值
                 surge = surge.packages.${prev.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
-                  vendorHash = "sha256-uZrSOcwfXJ9LwuHi+0wIjPBIsAdULU60GbWrJNV923s=";
+                  vendorHash = "sha256-HRY/HQ2tGeMgycodDf3eV8jZaj/fdqOPKpK+og9EyZk=";
                 });
                 # 测试环境有问题，跳过
                 pipx = prev.pipx.overridePythonAttrs { doCheck = false; };
