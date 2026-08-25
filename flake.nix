@@ -58,6 +58,11 @@
       inputs.home-manager.follows = "home-manager";
     };
 
+    winapps = {
+      url = "github:winapps-org/winapps";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
   };
 
   outputs =

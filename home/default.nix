@@ -69,6 +69,7 @@
     wemeet # 腾讯会议
     dive # Docker 镜像层分析工具
     kubernetes-helm # Kubernetes 包管理器
+    kubectl # Kubernetes 命令行客户端(远程连接集群)
     lsof # 查看打开文件工具
     wget # HTTP 下载工具
     posting # postman终端版

@@ -13,7 +13,7 @@
     ../common/xwayland.nix
     ../common/secrets
     ./virtualisation.nix
-    ./windows-vm.nix
+    ./winapps.nix
   ];
 
   boot.loader.systemd-boot.enable = true;
@@ -23,7 +23,10 @@
   networking.networkmanager.enable = true;
 
   networking.proxy.default = "http://127.0.0.1:7897/";
-  networking.proxy.noProxy = "127.0.0.1,localhost";
+  # Keep local and libvirt guest traffic away from the global Clash proxy.
+  networking.proxy.noProxy = "127.0.0.1,localhost,192.168.122.0/24";
+  # Let libvirt guests use the host Clash proxy without exposing it on the LAN.
+  networking.firewall.interfaces.virbr0.allowedTCPPorts = [ 7897 ];
 
   hardware.bluetooth.enable = true;
   hardware.bluetooth.powerOnBoot = true;
@@ -32,7 +35,21 @@
   zramSwap = {
     enable = true;
     memoryPercent = 50;
+    algorithm = "zstd";
+    priority = 100;
   };
+
+  # Keep zram as the fast first tier, then spill cold pages to NVMe instead of
+  # letting the host lock up when the Windows VM creates sustained pressure.
+  swapDevices = [
+    {
+      device = "/var/lib/swapfile";
+      size = 8 * 1024;
+      priority = -10;
+    }
+  ];
+
+  systemd.oomd.enable = true;
 
   services.upower.enable = true;
   services.power-profiles-daemon.enable = true;
