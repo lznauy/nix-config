@@ -35,26 +35,27 @@ in
   environment.sessionVariables.LIBVIRT_DEFAULT_URI = "qemu:///system";
 
   environment.systemPackages = [
+    pkgs.freerdp
     inputs.winapps.packages.${system}.winapps
     inputs.winapps.packages.${system}.winapps-launcher
     winappsAskpass
   ];
 
-  # WinApps connects to the existing stateful libvirt VM managed by virt-manager.
+  # The default WinApps command connects to the Docker-backed Windows VM.
   # The Windows username is intentionally easy to change here; its password is
   # requested graphically and never becomes part of the Nix store.
   home-manager.users.lznauy.xdg.configFile."winapps/winapps.conf" = {
     force = true;
     text = ''
-      RDP_USER="10315"
-      RDP_PASS=""
+      RDP_USER="lznauy"
+      RDP_PASS="admin@123"
       RDP_ASKPASS="${winappsAskpass}/bin/winapps-rdp-askpass"
       RDP_DOMAIN=""
 
-      RDP_IP=""
+      RDP_IP="127.0.0.1"
       RDP_PORT="3389"
-      VM_NAME="win11-pro"
-      WAFLAVOR="libvirt"
+      VM_NAME="WinApps"
+      WAFLAVOR="docker"
 
       RDP_SCALE="140"
       REMOVABLE_MEDIA="/run/media"
@@ -65,7 +66,7 @@ in
       DEBUG="true"
       AUTOPAUSE="off"
       AUTOPAUSE_TIME="300"
-      FREERDP_COMMAND=""
+      FREERDP_COMMAND="${pkgs.freerdp}/bin/xfreerdp"
       PORT_TIMEOUT="10"
       RDP_TIMEOUT="30"
     '';

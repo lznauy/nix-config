@@ -10,6 +10,7 @@
     ../common/base.nix
     ../common/i18n.nix
     ../common/clash-verge.nix
+    ../common/flatpak.nix
     ../common/xwayland.nix
     ../common/secrets
     ./virtualisation.nix
@@ -27,6 +28,7 @@
   networking.proxy.noProxy = "127.0.0.1,localhost,192.168.122.0/24";
   # Let libvirt guests use the host Clash proxy without exposing it on the LAN.
   networking.firewall.interfaces.virbr0.allowedTCPPorts = [ 7897 ];
+  networking.firewall.allowedTCPPorts = [ 7897 ];
 
   hardware.bluetooth.enable = true;
   hardware.bluetooth.powerOnBoot = true;

@@ -80,7 +80,6 @@ in
     enable = true;
     shellInit = ''
       set -x TERM xterm-256color
-      set -gx NPM_CONFIG_PREFIX "$HOME/.local/share/npm"
     '';
     interactiveShellInit = ''
       set fish_greeting

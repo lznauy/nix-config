@@ -12,6 +12,11 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
+
+    nix-flatpak = {
+      url = "git+https://github.com/gmodena/nix-flatpak?ref=refs/tags/v0.7.0";
+    };
+
     claude-code.url = "github:sadjow/claude-code-nix";
 
     home-manager = {
@@ -109,9 +114,9 @@
                   doCheck = false;
                 });
                 mark-shot = mark-shot.packages.${prev.stdenv.hostPlatform.system}.default;
-                # 上游 flake 的 vendorHash 已过期，修正为实际值
+                # 上游 flake 的 vendorHash 已过期，修正为当前 go.mod 的实际值。
                 surge = surge.packages.${prev.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
-                  vendorHash = "sha256-HRY/HQ2tGeMgycodDf3eV8jZaj/fdqOPKpK+og9EyZk=";
+                  vendorHash = "sha256-Ei2i7dQ9s42Gg6f2iLABbTG7OQspjHoRnqIhkfcNvFo=";
                 });
                 # 测试环境有问题，跳过
                 pipx = prev.pipx.overridePythonAttrs { doCheck = false; };
@@ -121,6 +126,12 @@
                       name = "niri-shm-sharing-26.04.patch";
                       url = "https://github.com/wrvsrx/niri/compare/tag_support-shm-sharing_4~19..tag_support-shm-sharing_4.patch";
                       sha256 = "15czbxdvcmm7fp4w3d1n463kpg7l6mbjh1msm6176296nn7g7dic";
+                    })
+                    # 修复 DMA-BUF modifier 协商及 SHM buffer metadata；上游 fork PR #1。
+                    (prev.fetchpatch {
+                      name = "niri-shm-sharing-26.04-fixes.patch";
+                      url = "https://github.com/wrvsrx/niri/compare/6c1613cee488515f3021ae9d8ef9233d6719c13f...2ab59b9.patch";
+                      sha256 = "sha256-tmy24IzDnx7hJfQs/Ufy8qXDA8L0b/uTilRRxHcIBMM=";
                     })
                   ];
                 });

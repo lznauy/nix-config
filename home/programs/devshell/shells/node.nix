@@ -7,10 +7,6 @@ pkgs.mkShell {
     typescript
   ];
 
-  env = {
-    NPM_CONFIG_PREFIX = "$HOME/.npm";
-  };
-
   shellHook = ''
     echo "📦 Node.js $(node --version) 已加载"
   '';

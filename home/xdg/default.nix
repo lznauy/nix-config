@@ -21,6 +21,7 @@
     GOPATH = "${config.xdg.dataHome}/go";
     PYTHON_HISTORY = "${config.xdg.stateHome}/python/history";
     NPM_CONFIG_CACHE = "${config.xdg.cacheHome}/npm";
+    NPM_CONFIG_PREFIX = "${config.xdg.dataHome}/npm";
     NPM_CONFIG_USERCONFIG = "${config.xdg.configHome}/npm/npmrc";
     WGETRC = "${config.xdg.configHome}/wget/wgetrc";
     LESSHISTFILE = "${config.xdg.stateHome}/less/history";

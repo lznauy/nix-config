@@ -10,6 +10,7 @@
     ../common/base.nix
     ../common/i18n.nix
     ../common/clash-verge.nix
+    ../common/flatpak.nix
     ../common/xwayland.nix
     ../common/secrets
   ];

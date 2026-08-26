@@ -26,6 +26,9 @@ in
 
   home.packages = [
     pkgs.mcp-nixos
+    pkgs.pyright
+    llm-agents.open-code-review
+    llm-agents.freebuff
     llm-agents.omp
     llm-agents.reasonix
     llm-agents.cc-switch-cli
