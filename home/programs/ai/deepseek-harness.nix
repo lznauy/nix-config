@@ -1,11 +1,12 @@
 { pkgs, ... }:
 
 let
-  dsh-web = pkgs.writeShellApplication {
-    name = "dsh-web";
+  dsh = pkgs.writeShellApplication {
+    name = "dsh";
     runtimeInputs = [
       pkgs.coreutils
       pkgs.nodejs
+      pkgs.pnpm
     ];
     text = ''
       dsh_version="0.1.0-rc.6"
@@ -20,7 +21,7 @@ let
 
       if [[ ! -x "$dsh_entry" || "$installed_version" != "$dsh_version" ]]; then
         mkdir -p "$dsh_data_dir"
-        printf 'dsh-web: installing @deepseek-ai/dsh@%s into %s\n' \
+        printf 'dsh: installing @deepseek-ai/dsh@%s into %s\n' \
           "$dsh_version" "$dsh_data_dir"
         npm install \
           --prefix "$dsh_data_dir" \
@@ -30,13 +31,13 @@ let
           --loglevel=http \
           "@deepseek-ai/dsh@$dsh_version"
         printf '%s\n' "$dsh_version" > "$dsh_version_file"
-        printf 'dsh-web: installation complete\n'
+        printf 'dsh: installation complete\n'
       fi
 
-      exec node --expose-internals "$dsh_entry" web "$@"
+      exec node --expose-internals "$dsh_entry" "$@"
     '';
   };
 in
 {
-  home.packages = [ dsh-web ];
+  home.packages = [ dsh ];
 }
