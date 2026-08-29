@@ -57,6 +57,11 @@
 
     surge.url = "github:SurgeDM/Surge";
 
+    tailcat = {
+      url = "github:tailscale/tailcat";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     open-design = {
       url = "github:nexu-io/open-design";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -84,6 +89,7 @@
       witr,
       mark-shot,
       surge,
+      tailcat,
       ...
     }@inputs:
     let
@@ -114,6 +120,7 @@
                   doCheck = false;
                 });
                 mark-shot = mark-shot.packages.${prev.stdenv.hostPlatform.system}.default;
+                tailcat = tailcat.packages.${prev.stdenv.hostPlatform.system}.default;
                 # 上游 flake 的 vendorHash 已过期，修正为当前 go.mod 的实际值。
                 surge = surge.packages.${prev.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
                   vendorHash = "sha256-Ei2i7dQ9s42Gg6f2iLABbTG7OQspjHoRnqIhkfcNvFo=";

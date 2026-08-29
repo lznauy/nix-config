@@ -101,6 +101,7 @@
     comma # 使用逗号临时运行未安装的程序
     mark-shot # 截图标注工具
     surge # TUI 下载管理器
+    tailcat # 基于 Tailscale 数据平面的点对点 netcat
     upx # 可执行文件压缩工具
     blueman # 蓝牙管理 GUI
     cava # 终端音量显示
