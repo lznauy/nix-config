@@ -24,19 +24,20 @@ in
 
   home.packages = [
     (pkgs.writeShellScriptBin "qs-island" ''
+      mkdir -p ${config.xdg.stateHome}/quickshell/dynamic-island
       exec ${pkgs.quickshell}/bin/quickshell \
         --path ${islandDir}/shell.qml
     '')
   ];
 
   xdg.desktopEntries."qs-island" = {
-    name = "Dynamic Island";
+    name = "Desktop Lyrics";
     exec = "qs-island";
     icon = "qs-island";
     type = "Application";
     terminal = false;
     startupNotify = false;
     categories = [ "Utility" ];
-    comment = "桌面歌词 / 时钟悬浮组件";
+    comment = "透明、可拖动的桌面歌词悬浮层";
   };
 }

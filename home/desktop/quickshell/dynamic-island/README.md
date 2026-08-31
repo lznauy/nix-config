@@ -1,187 +1,92 @@
-# Dynamic Island
+# Desktop Lyrics
 
-一个基于 Quickshell 的 Wayland 桌面组件，灵感来自 Apple Dynamic Island。悬浮在屏幕底部，折叠时是一个小药丸，播放音乐时展开滚动歌词，支持实时语音翻译。
+基于 Quickshell 的 Wayland 桌面歌词悬浮层。组件保持透明并浮在普通窗口之上，不占用屏幕布局；只有歌词区域接收鼠标输入，其他区域保持点击穿透。
 
-## 目录结构
+## 交互
 
-```
-dynamic-island/
-├── shell.qml                        # 主入口：面板窗口、状态机、播放器管理
-├── Common/
-│   ├── qmldir                       # 模块声明（singleton 注册）
-│   ├── Appearance.qml               # 颜色（Nord 调色板）
-│   ├── Animations.qml               # 贝塞尔曲线 & 动画参数（暂未使用）
-│   ├── DynamicIslandMotion.qml      # 弹簧物理参数（spring/mass/damping）
-│   ├── Sizes.qml                    # 字体栈
-│   └── Paths.qml                    # 路径解析
-├── Content/
-│   ├── qmldir                       # 模块声明
-│   ├── ClockContent.qml             # 折叠态时钟（日期 + 翻页数字表）
-│   ├── LyricsContent.qml            # 歌词获取 & 同步显示
-│   └── TranslationContent.qml       # 实时语音翻译（live-translator）
-└── scripts/
-    └── lyrics_fetcher.py            # 歌词抓取（QQ音乐 → 网易云 → 回退）
-```
+- 默认显示当前歌词与下一句，不再折叠成底部胶囊。
+- 鼠标拖动歌词区域可调整位置，松开后按屏幕保存相对坐标。
+- 悬停时显示曲目信息、播放/暂停和下一曲按钮。
+- 暂停后保留当前歌词；播放器关闭后显示等待状态。
+- 每块屏幕创建独立悬浮层，位置分别保存在 XDG_STATE_HOME/quickshell/dynamic-island/。
 
-## 架构
+## 窗口行为
 
-```
-┌─────────────────────────────────────────────────────┐
-│  PanelWindow (WlrLayershell.Top, exclusiveZone: -1) │
-│  ┌───────────────────────────────────────────────┐  │
-│  │  maskContainer                               │  │
-│  │  ┌─────────────────────────────────────────┐ │  │
-│  │  │  ClippingRectangle (root)               │ │  │
-│  │  │  • 状态机：collapsed ⇄ lyrics            │ │  │
-│  │  │  • 弹簧动画：width / height / radius      │ │  │
-│  │  │  • MPRIS 信号 & 轮询双通道               │ │  │
-│  │  │  ┌──────────────┐ ┌──────────────────┐  │ │  │
-│  │  │  │ ClockContent │ │ LyricsContent    │  │ │  │
-│  │  │  │ • 吸顶       │ │ • 歌词抓取(Process)│ │ │  │
-│  │  │  │ • 翻页时钟   │ │ • 时间同步(Timer) │  │ │  │
-│  │  │  └──────────────┘ └──────────────────┘  │ │  │
-│  │  │  ┌──────────────────────────────────┐   │ │  │
-│  │  │  │ TranslationContent               │   │ │  │
-│  │  │  │ • 麦克风 → ASR → NMT → 翻译文字   │   │ │  │
-│  │  │  │ • Process 调 live-translator     │   │ │  │
-│  │  │  │ • stdin JSON 命令 / stdout JSON   │   │ │  │
-│  │  │  └──────────────────────────────────┘   │ │  │
-│  │  └─────────────────────────────────────────┘ │  │
-│  └───────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────┘
-```
+    PanelWindow (WlrLayer.Overlay)
+    ├── 全屏透明 surface
+    ├── exclusiveZone: -1
+    ├── keyboardFocus: None
+    ├── mask: 仅 LyricsContent 区域
+    └── LyricsContent
+        ├── DragHandler
+        ├── 当前歌词 + 下一句
+        └── 悬停播放控制
 
-## 状态机
+全屏 layer-shell surface 只负责提供任意位置坐标系。Region 输入 mask 始终跟随歌词组件，因此不会阻挡歌词以外窗口的点击和滚动。
 
-```
-          hover ──────────────┐
-            │                 │
-   ┌────────▼────────┐       ┌▼─────────────────┐
-   │  collapsed (4px) │       │ collapsed-hover  │
-   │  无内容          │       │ 时钟 + 日期 (32px)│
-   └────────┬────────┘       └────────┬──────────┘
-            │ click / 检测到播放       │ click
-            ▼                         ▼
-   ┌──────────────────────────────────────────┐
-   │  lyrics (展开)                            │
-   │  专辑封面 + 滚动歌词 (宽度自适应)           │
-   │  Esc / 点击 → 折叠（autoDismissed = true） │
-   │  切歌 → 自动展开（重置 autoDismissed）     │
-   └──────────────────────────────────────────┘
-```
+## Noctalia 主题
 
-## 运行逻辑
+Common/Appearance.qml 监听 Noctalia v5 生成的：
 
-### 1. 播放器发现
+    ~/.config/noctalia/colors.json
 
-| 层级 | 机制 | 作用 |
-|------|------|------|
-| 慢轮询 | `playerPollTimer`（2s） | 发现新播放器、移除已离线的 |
-| 信号 | `Connections` 监听 `isPlayingChanged` / `trackChanged` | 切歌、暂停立即响应（<100ms） |
+Material 3 色彩映射：
 
-找到正在播放的 player 后，`refreshPlayers()` 将其设为 `currentPlayer`，`Connections` 自动切换到新 player 继续监听。
+| Noctalia | 用途 |
+|---|---|
+| mPrimary | 当前歌词强调线、拖动标记 |
+| mOnSurface | 当前歌词 |
+| mOnSurfaceVariant | 下一句、曲目信息 |
+| mSurfaceVariant | 悬停按钮背景 |
+| mOutline | 辅助轮廓 |
 
-### 2. 歌词获取（LyricsContent）
+主题文件变化后会自动重载，并用 220ms 颜色过渡切换。若 `colors.json` 尚未生成，会自动读取 Noctalia 内置 Starship 模板产生的 `~/.cache/noctalia/starship-palette.toml`；两者都不可用时才回退到 Nord 配色。
 
-```
-trackTitle 变化
-  │
-  ├─ 300ms debounce（防止快速切歌抖动）
-  │
-  ├─ 杀死旧 Process，重置 fetchValid 标志
-  │
-  ├─ 启动 lyrics_fetcher.py（Python）
-  │     ├─ 查本地缓存 /tmp/qs_lyrics_cache
-  │     ├─ 缓存未命中 → QQ音乐 API（3s 超时）
-  │     ├─ QQ音乐失败 → 网易云 API（3s 超时）
-  │     └─ 都失败 → "暂无歌词"
-  │
-  ├─ 10s 超时保护（fetchTimeout Timer）
-  │     └─ 超时 → "歌词获取超时"，fetchValid = false 防止遗漏 stdout 覆盖
-  │
-  └─ 解析 JSON → 更新 lyricsModel → ListView 渲染
-```
+歌词本身没有背景。文字使用与前景色反向的细描边，保证覆盖在亮色或暗色应用窗口上时仍可辨认。
 
-`fetchValid` 守卫确保：
-- 超时后的残留 stdout 不覆盖"获取超时"提示
-- 切歌后的旧请求输出不污染新歌歌词
-- `onRead` 只处理一次（处理完置 false）
+主歌词使用霞鹜文楷，曲名和控制信息使用 Noto Sans CJK。悬停时仅控制条显示高不透明度主题承载面，歌词区域继续保持透明。
 
-### 3. 歌词同步
+组件启动后静默待机，仅在当前歌曲的有效歌词加载完成后淡入。无播放器、无曲目、加载中或无歌词时不显示任何提示，也不占用窗口输入区域；暂停时保留当前歌词。
 
-```
-syncTimer（100ms）
-  │
-  ├─ 读取 player.position（微秒/秒自适应）
-  │
-  ├─ 遍历 lyricsModel 找到当前行
-  │     └─ 向前看 0.5s 避免歌词"跟不上"
-  │
-  └─ 更新 currentLineIndex → ListView.currentIndex
-       └─ highlightMoveDuration: 400ms 滚动动画
-```
+## 歌词获取
 
-### 4. 宽度自适应
+    MPRIS track change
+      ├── 300ms debounce
+      ├── QQ 音乐 API
+      ├── 网易云 API fallback
+      ├── XDG cache + 文件锁 + 原子写入
+      └── JSON lyrics model
+           └── 100ms position sync + 二分查找
 
-每行歌词的 `implicitWidth` 不同。当 `isCurrent` 变化时，`lyricsTextWidth` 取**历史最大值**，保证同一首歌内 pill 宽度只增不减（避免宽度抖动）。切歌时重置为 350。
+搜索结果会同时校验曲名、歌手和 Live/Remix 等版本标记，不再直接使用第一条候选；开头的制作名单会被过滤。缓存目录为 XDG_CACHE_HOME/quickshell/dynamic-island/lyrics，未设置时使用 ~/.cache，最多保留 256 条。无歌词结果缓存 10 分钟，避免多屏和重复播放持续请求。
 
-### 5. 动画系统
+## 目录
 
-| 属性 | 阻尼（展开） | 阻尼（缩小） | 效果 |
-|------|------------|------------|------|
-| width | 0.7（弹） | 0.8（稳） | 展开时更有弹性 |
-| height | 0.7 | 0.8 | 同上 |
-| radius | 0.7 | 0.8 | 圆角同步收放 |
+    dynamic-island/
+    ├── shell.qml
+    ├── Common/
+    │   ├── Appearance.qml
+    │   ├── Paths.qml
+    │   └── Sizes.qml
+    ├── Content/
+    │   └── LyricsContent.qml
+    └── scripts/
+        └── lyrics_fetcher.py
 
-弹簧物理参数（`DynamicIslandMotion`）：spring=5.0, mass=3.6, epsilon=0.01
-
-## 多屏支持
-
-`Variants { model: Quickshell.screens }` 为每个屏幕创建独立实例。每个实例独立运行（各自维护 `currentPlayer`、`showLyrics` 等状态）。歌词缓存（`/tmp/qs_lyrics_cache`）跨实例共享，避免重复网络请求。
+ClockContent.qml 与 TranslationContent.qml 仍保留为独立组件，但不再挂载到默认歌词悬浮层。
 
 ## 依赖
 
 | 组件 | 说明 |
-|------|------|
-| Quickshell (>= 0.0.10) | PanelWindow, Mpris, Process, ClippingRectangle |
-| Qt 6 (>= 6.7) | QML, Quick.Effects |
-| Python 3.8+ | 歌词抓取脚本 |
-| wayland (wlr-layer-shell) | 面板悬浮 |
+|---|---|
+| Quickshell | PanelWindow、MPRIS、FileView、Process |
+| Qt 6 | QML、Quick Effects |
+| Python 3.8+ | 歌词抓取，仅使用标准库 |
+| wlr-layer-shell | 透明 Overlay 与输入区域 |
+| Noctalia v5 | 可选动态主题来源 |
 
-Python 端依赖标准库（`urllib`, `hashlib`, `base64`, `json`），无额外 pip 包。
+## 启动
 
-## Nix 部署
+    qs-island
 
-```nix
-# home-manager 模块
-xdg.configFile = {
-  "quickshell/dynamic-island/shell.qml" = { source = ./shell.qml; force = true; };
-  # ... 其他文件
-};
-
-home.packages = [
-  (pkgs.writeShellScriptBin "qs-island" ''
-    exec ${pkgs.quickshell}/bin/quickshell \
-      --path ${config.xdg.configHome}/quickshell/dynamic-island/shell.qml
-  '')
-];
-```
-
-启动：`qs-island`（自动加入 autostart 或手动执行）。
-
-## 语音翻译
-
-`TranslationContent` 组件调用 `live-translator` 进程，实现实时语音翻译：
-
-```
-麦克风 → VAD(Silero) → ASR(SenseVoiceSmall) → NMT(NLLB-600M, oneDNN) → 翻译文字
-```
-
-| 属性 | 说明 |
-|------|------|
-| `srcLang` / `tgtLang` | 源/目标语言（zh/ja/en/ko/yue） |
-| `start()` / `stop()` | 开始/停止监听 |
-| `partialText` | 中间识别结果 |
-| `finalText` / `translatedText` | 最终识别 + 翻译 |
-
-详见 [live-translator/README.md](live-translator/README.md)。
+启动脚本会创建位置状态目录，再加载 shell.qml。

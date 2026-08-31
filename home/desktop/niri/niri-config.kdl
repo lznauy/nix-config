@@ -102,11 +102,6 @@ layout {
 
 hotkey-overlay {}
 
-layer-rule {
-    match namespace=r#"^qs-dynamic-island$"#
-    opacity 0.85
-}
-
 prefer-no-csd
 
 screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"

@@ -16,7 +16,21 @@ let
   };
 in
 {
-  home.packages = [ zed-editor-wrapped ];
+  programs.zed-editor = {
+    enable = true;
+    package = zed-editor-wrapped;
+
+    # 扩展仍由 Zed 在启动时安装；依赖的语言服务器由 Nix 提供。
+    extensions = [
+      "nix"
+      "qml"
+    ];
+    extraPackages = with pkgs; [
+      nixd
+      nil
+      qt6.qtdeclarative # 提供 qmlls
+    ];
+  };
 
   # 种子配置 — 仅在新机器首次部署时创建，之后 zed 可自由修改
   # 主题由 Noctalia 模板运行时写入 ~/.config/zed/themes/noctalia.json

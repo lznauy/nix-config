@@ -50,6 +50,7 @@
     libwebp # WebP 图像格式工具集(cwebp/dwebp/gif2webp)
     ffmpeg # 多媒体处理框架
     openssl # 加密库与命令行工具
+    btop # 升级版top
 
     net-tools # 网络配置工具集(ifconfig 等)
     translate-shell # 终端翻译工具
