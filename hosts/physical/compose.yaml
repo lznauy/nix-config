@@ -10,6 +10,11 @@ services:
   windows:
     image: ghcr.io/dockur/windows:latest
     container_name: WinApps # Created Docker VM Name.
+    # Use stable public resolvers instead of inheriting a stale DNS server when
+    # the host switches between home and company Wi-Fi networks.
+    dns:
+      - 119.29.29.29
+      - 1.1.1.1
     environment:
       # Version of Windows to configure. For valid options, visit:
       # https://github.com/dockur/windows?tab=readme-ov-file#how-do-i-select-the-windows-version
