@@ -1,15 +1,6 @@
 {
   description = "lznauy's NixOS";
 
-  nixConfig = {
-    extra-substituters = [
-      "https://noctalia.cachix.org"
-    ];
-    extra-trusted-public-keys = [
-      "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4="
-    ];
-  };
-
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
 
@@ -60,12 +51,6 @@
     tailcat = {
       url = "github:tailscale/tailcat";
       inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    open-design = {
-      url = "github:nexu-io/open-design";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.home-manager.follows = "home-manager";
     };
 
     winapps = {
@@ -120,7 +105,10 @@
                   doCheck = false;
                 });
                 mark-shot = mark-shot.packages.${prev.stdenv.hostPlatform.system}.default;
-                tailcat = tailcat.packages.${prev.stdenv.hostPlatform.system}.default;
+                # e2e 测试需网络且并行 exec 构建产物，Nix 沙箱下必然失败，跳过
+                tailcat = tailcat.packages.${prev.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
+                  doCheck = false;
+                });
                 # 上游 flake 的 vendorHash 已过期，修正为当前 go.mod 的实际值。
                 surge = surge.packages.${prev.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
                   vendorHash = "sha256-Ei2i7dQ9s42Gg6f2iLABbTG7OQspjHoRnqIhkfcNvFo=";
@@ -158,7 +146,6 @@
             inputs.nixvim.homeModules.nixvim
             inputs.noctalia.homeModules.default
             inputs.stylix.homeModules.stylix
-            inputs.open-design.homeManagerModules.default
           ];
 
           home-manager.users.lznauy = import ./home/default.nix;

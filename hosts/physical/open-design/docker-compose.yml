@@ -1,0 +1,46 @@
+# OpenDesign 容器栈 —— Linux 单文件版
+# 合并上游 deploy/docker-compose.yml + docker-compose.linux.yml 的最终生效配置:
+# host 网络、仅绑 127.0.0.1(满足 connector loopback 守卫),官方镜像固定 0.21.1。
+# 不挂载宿主 agent CLI(当前走 BYOK);需要时按上游 README 补卷并自建本地镜像。
+# 说明: https://github.com/nexu-io/open-design/blob/master/deploy/README.md
+name: open-design
+
+services:
+  open-design:
+    container_name: open-design
+    image: ${OPEN_DESIGN_IMAGE:-ghcr.io/nexu-io/od:0.21.1}
+    restart: always
+    environment:
+      NODE_ENV: production
+      NODE_OPTIONS: ${NODE_OPTIONS:---max-old-space-size=192}
+      # host 网络直接绑宿主网卡,锁回 loopback 防止暴露到局域网
+      OD_BIND_HOST: 127.0.0.1
+      OD_ALLOWED_ORIGINS: ${OPEN_DESIGN_ALLOWED_ORIGINS:-}
+      OD_PORT: ${OPEN_DESIGN_PORT:-7456}
+      OD_WEB_PORT: ${OPEN_DESIGN_PORT:-7456}
+      OD_API_TOKEN: ${OD_API_TOKEN:-}
+      OD_DISABLE_API_AUTH: ${OPEN_DESIGN_DISABLE_API_AUTH:-}
+    volumes:
+      - open_design_data:/app/.od
+    read_only: true
+    tmpfs:
+      - /tmp
+      # 与基础镜像 open-design 用户(1001:1001)一致
+      - /home/open-design:uid=1001,gid=1001
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: ${OPEN_DESIGN_MEM_LIMIT:-384m}
+    pids_limit: 256
+    # 限制 CPU,避免繁忙的 agent 运行饿死宿主机
+    cpus: '1.5'
+    network_mode: host
+    healthcheck:
+      # Alpine 镜像用 wget,比 node 快,启动期不抢 CPU
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:${OPEN_DESIGN_PORT:-7456}/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  open_design_data:
