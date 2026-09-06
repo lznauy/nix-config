@@ -2,7 +2,12 @@
   config,
   pkgs,
   ...
-}: {
+}:
+{
+  imports = [
+    ./mime.nix
+    ./desktop-files.nix
+  ];
   home.packages = with pkgs; [
     xdg-utils # XDG 命令行工具集(open/xdg-open 等)
   ];

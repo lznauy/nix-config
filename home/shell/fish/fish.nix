@@ -51,7 +51,10 @@ in
     force = true;
   };
 
-  home.activation.seedNoctaliaStarshipConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+  home.activation.seedNoctaliaStarshipConfig = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
+    if [[ -v DRY_RUN ]]; then
+      echo "Would initialize the Noctalia Starship runtime configuration"
+    else
     runtime_config="${starshipRuntimeConfig}"
     base_config="${starshipBaseConfig}"
     base_stamp="${starshipRuntimeConfig}.base"
@@ -74,6 +77,7 @@ in
         printf '# <<< NOCTALIA STARSHIP PALETTE <<<\n'
       } >> "$runtime_config"
     fi
+    fi
   '';
 
   programs.fish = {
@@ -83,23 +87,9 @@ in
     '';
     interactiveShellInit = ''
       set fish_greeting
-      fish_add_path "${config.home.homeDirectory}/.local/share/go/bin"
-      fish_add_path "${config.home.homeDirectory}/.local/share/npm/bin"
+      fish_add_path "${config.xdg.dataHome}/go/bin"
+      fish_add_path "${config.xdg.dataHome}/npm/bin"
     '';
-    functions = {
-      claude-ds = {
-        body = "command claude --settings ~/.claude/settings-deepseek.json $argv";
-      };
-      claude-mimo = {
-        body = "command claude --settings ~/.claude/settings-mimo.json $argv";
-      };
-      opencode = {
-        body = "command opencode -m deepseek/deepseek-v4-pro $argv";
-      };
-      opencode-mimo = {
-        body = "command opencode -m mimo/mimo-v2.5-pro $argv";
-      };
-    };
   };
 
   programs.starship = {

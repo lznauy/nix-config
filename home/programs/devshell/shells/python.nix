@@ -1,7 +1,7 @@
 # Python 开发环境
 { pkgs }:
-pkgs.mkShell {
-  buildInputs = with pkgs; [
+{
+  packages = with pkgs; [
     python3
     python3Packages.pip
     uv

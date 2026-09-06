@@ -4,9 +4,10 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
 
-    nix-flatpak = {
-      url = "git+https://github.com/gmodena/nix-flatpak?ref=refs/tags/v0.7.0";
-    };
+    # 仅用于单包追新（如 clash-verge-rev），系统基座保持 nixos-26.05
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+
+    nix-flatpak.url = "git+https://github.com/gmodena/nix-flatpak?ref=refs/tags/v0.7.0";
 
     claude-code.url = "github:sadjow/claude-code-nix";
 
@@ -15,13 +16,9 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    nixvim = {
-      url = "github:nix-community/nixvim/nixos-26.05";
-    };
+    nixvim.url = "github:nix-community/nixvim/nixos-26.05";
 
-    noctalia = {
-      url = "github:noctalia-dev/noctalia-shell";
-    };
+    noctalia.url = "github:noctalia-dev/noctalia-shell";
 
     sops-nix = {
       url = "github:Mic92/sops-nix";
@@ -61,120 +58,35 @@
   };
 
   outputs =
-    {
-      self,
-      nixpkgs,
-      home-manager,
-      nixvim,
-      noctalia,
-      claude-code,
-      sops-nix,
-      quien,
-      stylix,
-      witr,
-      mark-shot,
-      surge,
-      tailcat,
-      ...
-    }@inputs:
+    { nixpkgs, ... }@inputs:
     let
-      commonModules = [
-        sops-nix.nixosModules.sops
-        (
-          { ... }:
-          {
-            nixpkgs.hostPlatform = "x86_64-linux";
-            nixpkgs.config.allowUnfree = true;
-            nix.settings = {
-              extra-substituters = [
-                "https://cache.numtide.com"
-                "https://noctalia.cachix.org"
-              ];
-              extra-trusted-public-keys = [
-                "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="
-                "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4="
-              ];
-            };
-            nixpkgs.overlays = [
-              claude-code.overlays.default
-              inputs.nur.overlays.default
-              (final: prev: {
-                quien = quien.packages.${prev.stdenv.hostPlatform.system}.default;
-                witr = witr.packages.${prev.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
-                  # launchd 测试是 macOS 专属，proc 文件锁测试在沙盒中失败
-                  doCheck = false;
-                });
-                mark-shot = mark-shot.packages.${prev.stdenv.hostPlatform.system}.default;
-                # e2e 测试需网络且并行 exec 构建产物，Nix 沙箱下必然失败，跳过
-                tailcat = tailcat.packages.${prev.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
-                  doCheck = false;
-                });
-                # 上游 flake 的 vendorHash 已过期，修正为当前 go.mod 的实际值。
-                surge = surge.packages.${prev.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
-                  vendorHash = "sha256-Ei2i7dQ9s42Gg6f2iLABbTG7OQspjHoRnqIhkfcNvFo=";
-                });
-                # 测试环境有问题，跳过
-                pipx = prev.pipx.overridePythonAttrs { doCheck = false; };
-                niri = prev.niri.overrideAttrs (old: {
-                  patches = (old.patches or [ ]) ++ [
-                    (prev.fetchpatch {
-                      name = "niri-shm-sharing-26.04.patch";
-                      url = "https://github.com/wrvsrx/niri/compare/tag_support-shm-sharing_4~19..tag_support-shm-sharing_4.patch";
-                      sha256 = "15czbxdvcmm7fp4w3d1n463kpg7l6mbjh1msm6176296nn7g7dic";
-                    })
-                    # 修复 DMA-BUF modifier 协商及 SHM buffer metadata；上游 fork PR #1。
-                    (prev.fetchpatch {
-                      name = "niri-shm-sharing-26.04-fixes.patch";
-                      url = "https://github.com/wrvsrx/niri/compare/6c1613cee488515f3021ae9d8ef9233d6719c13f...2ab59b9.patch";
-                      sha256 = "sha256-tmy24IzDnx7hJfQs/Ufy8qXDA8L0b/uTilRRxHcIBMM=";
-                    })
-                  ];
-                });
-                # QQNT — 版本锁定
-                qq = final.callPackage ./home/programs/qq/package.nix { qq = prev.qq; };
-              })
-            ];
-          }
-        )
-        home-manager.nixosModules.home-manager
-        {
-          home-manager.extraSpecialArgs = { inherit inputs; };
-          home-manager.useGlobalPkgs = true;
-          home-manager.useUserPackages = true;
-
-          home-manager.sharedModules = [
-            inputs.nixvim.homeModules.nixvim
-            inputs.noctalia.homeModules.default
-            inputs.stylix.homeModules.stylix
-          ];
-
-          home-manager.users.lznauy = import ./home/default.nix;
-        }
-      ];
-
-      mkHost = hostModules: nixpkgs.lib.nixosSystem {
-        modules = commonModules ++ hostModules;
-        specialArgs = { inherit inputs; };
-      };
+      system = "x86_64-linux";
+      pkgs = nixpkgs.legacyPackages.${system};
+      mkHost =
+        hostModules:
+        nixpkgs.lib.nixosSystem {
+          modules = [ { nixpkgs.hostPlatform = system; } ] ++ hostModules;
+          specialArgs = { inherit inputs; };
+        };
     in
     {
-      nixosConfigurations =
-        {
-          # VMware 桌面机
-          nixos = mkHost [
-            ./hosts/vmware/hardware.nix
-            ./hosts/vmware/default.nix
-          ];
+      nixosConfigurations = {
+        # VMware 桌面机
+        nixos = mkHost [
+          ./hosts/vmware/hardware.nix
+          ./hosts/vmware/default.nix
+        ];
 
-          # 物理机
-          physical = mkHost [
-            ./hosts/physical/hardware.nix
-            ./hosts/physical/default.nix
-          ];
-        }
-        // (import ./hosts/virtual/default.nix { inherit nixpkgs; });
+        # 物理机
+        physical = mkHost [
+          ./hosts/physical/hardware.nix
+          ./hosts/physical/default.nix
+        ];
+      }
+      // (import ./hosts/virtual/default.nix { inherit nixpkgs; });
 
-      devShells.x86_64-linux = import ./home/programs/devshell/default.nix { pkgs = nixpkgs.legacyPackages.x86_64-linux; };
-
+      devShells.${system} = import ./home/programs/devshell { inherit pkgs; };
+      formatter.${system} = pkgs.nixfmt-tree;
+      checks.${system} = import ./checks { inherit pkgs; };
     };
 }

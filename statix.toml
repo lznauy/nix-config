@@ -1,0 +1,2 @@
+# NixOS/HM modules intentionally group settings by feature with dotted keys.
+disabled = ["repeated_keys"]

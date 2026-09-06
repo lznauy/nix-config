@@ -10,14 +10,14 @@ WinApps 通过 FreeRDP 连接 Docker 容器里的 Windows 虚拟机，并把 Win
 
 ```bash
 RDP_USER="lznauy"
-RDP_PASS="admin@123"
+RDP_PASS="$(cat /run/secrets/rendered/winapps/password)"
 RDP_IP="127.0.0.1"
 RDP_PORT="3389"
 WAFLAVOR="docker"
 FREERDP_COMMAND="xfreerdp"
 ```
 
-用户名和密码由 Compose 与 WinApps 配置统一管理。
+密码由 sops-nix 提供，配置中不再保存明文凭据。请先完成 age 密钥配置，再启动 WinApps。
 
 修改配置后重新构建系统：
 

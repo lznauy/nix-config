@@ -1,7 +1,7 @@
 # Go 开发环境
 { pkgs }:
-pkgs.mkShell {
-  buildInputs = with pkgs; [
+{
+  packages = with pkgs; [
     go # 编译器
     gopls # LSP
     delve # 调试器

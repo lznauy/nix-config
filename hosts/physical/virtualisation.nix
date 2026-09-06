@@ -1,4 +1,7 @@
 { pkgs, ... }:
+let
+  user = import ../../config/user.nix;
+in
 
 {
   programs.virt-manager = {
@@ -24,7 +27,7 @@
 
   environment.systemPackages = [ pkgs.virt-viewer ];
 
-  users.users.lznauy.extraGroups = [
+  users.users.${user.name}.extraGroups = [
     "kvm"
     "libvirtd"
   ];

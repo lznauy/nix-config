@@ -1,10 +1,12 @@
 {
+  config,
   inputs,
   pkgs,
   ...
 }:
 
 let
+  user = import ../../config/user.nix;
   system = pkgs.stdenv.hostPlatform.system;
 in
 {
@@ -16,12 +18,22 @@ in
     inputs.winapps.packages.${system}.winapps-launcher
   ];
 
+  sops.secrets."winapps/password" = {
+    owner = user.name;
+    inherit (user) group;
+  };
+  sops.templates."winapps.env" = {
+    owner = user.name;
+    inherit (user) group;
+    content = "PASSWORD=${config.sops.placeholder."winapps/password"}\n";
+  };
+
   # The default WinApps command connects to the Docker-backed Windows VM.
-  home-manager.users.lznauy.xdg.configFile."winapps/winapps.conf" = {
+  home-manager.users.${user.name}.xdg.configFile."winapps/winapps.conf" = {
     force = true;
     text = ''
-      RDP_USER="lznauy"
-      RDP_PASS="admin@123"
+      RDP_USER="${user.name}"
+      RDP_PASS="$(cat ${config.sops.secrets."winapps/password".path})"
       RDP_ASKPASS=""
       RDP_DOMAIN=""
 

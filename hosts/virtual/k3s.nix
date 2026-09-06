@@ -2,6 +2,9 @@
 # 使用: nixos-rebuild build-vm --flake .#vm-k3s
 # 运行: ./result/bin/run-k3s-vm
 { pkgs, lib, ... }:
+let
+  user = import ../../config/user.nix;
+in
 {
   imports = [
     ../common/base.nix
@@ -11,7 +14,7 @@
   networking.hostName = "k3s";
 
   users.users.root.initialPassword = "admin@123";
-  users.users.lznauy = {
+  users.users.${user.name} = {
     isNormalUser = true;
     extraGroups = [ "wheel" ];
     initialPassword = "admin@123";
@@ -33,10 +36,18 @@
   };
 
   # 防火墙放行
-  networking.firewall.allowedTCPPorts = [ 6443 80 443 22 ];
+  networking.firewall.allowedTCPPorts = [
+    6443
+    80
+    443
+    22
+  ];
 
   services.openssh.settings.PermitRootLogin = lib.mkForce "yes";
-  services.openssh.settings.AllowUsers = lib.mkForce [ "root" "lznauy" ];
+  services.openssh.settings.AllowUsers = lib.mkForce [
+    "root"
+    user.name
+  ];
 
   environment.systemPackages = with pkgs; [
     kubectl
@@ -62,11 +73,23 @@
   virtualisation.vmVariant.virtualisation = {
     memorySize = 4096;
     cores = 2;
-    diskSize = 20480;  # 20GB
+    diskSize = 20480; # 20GB
     forwardPorts = [
-      { from = "host"; host.port = 6443; guest.port = 6443; }  # k8s API
-      { from = "host"; host.port = 8080; guest.port = 80; }    # HTTP
-      { from = "host"; host.port = 2222; guest.port = 22; }    # SSH
+      {
+        from = "host";
+        host.port = 6443;
+        guest.port = 6443;
+      } # k8s API
+      {
+        from = "host";
+        host.port = 8080;
+        guest.port = 80;
+      } # HTTP
+      {
+        from = "host";
+        host.port = 2222;
+        guest.port = 22;
+      } # SSH
     ];
   };
 }

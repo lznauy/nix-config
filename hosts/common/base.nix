@@ -1,16 +1,8 @@
 # 所有主机共享的基础配置
 # 任何新 host 都应 import 此文件
-{ pkgs, ... }:
+{ lib, pkgs, ... }:
 {
-  time.timeZone = "Asia/Shanghai";
-
-  i18n = {
-    defaultLocale = "zh_CN.UTF-8";
-    supportedLocales = [
-      "zh_CN.UTF-8/UTF-8"
-      "en_US.UTF-8/UTF-8"
-    ];
-  };
+  imports = [ ./locale.nix ];
 
   nix.settings = {
     substituters = [
@@ -18,18 +10,16 @@
       "https://mirror.sjtu.edu.cn/nix-channels/store"
       "https://cache.nixos.org/"
     ];
-    experimental-features = [ "nix-command" "flakes" ];
-    max-jobs = 8;
-    cores = 2;
+    experimental-features = [
+      "nix-command"
+      "flakes"
+    ];
+    # Hosts can override the shared build budget with ordinary assignments.
+    max-jobs = lib.mkDefault 8;
+    cores = lib.mkDefault 2;
     keep-derivations = true;
     keep-outputs = true;
   };
-
-
-
-  nixpkgs.config.permittedInsecurePackages = [
-    "electron-39.8.10"
-  ];
 
   environment.systemPackages = with pkgs; [
     wget

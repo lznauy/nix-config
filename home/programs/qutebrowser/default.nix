@@ -1,13 +1,12 @@
-{
-  pkgs,
-  config,
-  ...
-}:
+_:
 let
   homepage = "https://start.duckduckgo.com";
 in
 {
-  imports = [ ./theme.nix ./duckduckgo-colorscheme.nix ];
+  imports = [
+    ./theme.nix
+    ./duckduckgo-colorscheme.nix
+  ];
 
   programs.qutebrowser = {
     enable = true;

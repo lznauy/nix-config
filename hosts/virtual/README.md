@@ -13,7 +13,8 @@ hosts/virtual/
 ## 架构：三层继承
 
 ```
-hosts/base.nix                ← 全局基础（时区、语言、nix 设置、openssh、基础工具）
+hosts/common/base.nix         ← 全局基础（nix 设置、openssh、基础工具）
+hosts/common/locale.nix       ← 时区与 locale
   └─ hosts/virtual/base.nix   ← VM 基础（qemu-guest、串口控制台、DHCP、网络工具）
       └─ hosts/virtual/k3s.nix ← VM 实例（k3s 服务、用户、端口转发、资源配额）
 ```

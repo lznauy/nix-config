@@ -62,7 +62,6 @@ home/
 ├── xdg/
 │   ├── default.nix          # xdg.enable + sessionVariables + bash
 │   ├── mime.nix             # 默认应用关联
-│   ├── autostart.nix        # 自启动
 │   └── desktop-files.nix    # desktop 文件
 └── programs/
     ├── ai.nix               # AI 工具

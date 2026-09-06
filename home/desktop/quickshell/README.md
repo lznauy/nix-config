@@ -29,49 +29,23 @@ binds {
 
 ## 添加新组件规范
 
-### 目录结构
+### 配置入口
 
-```
-home/desktop/quickshell/
-├── README.md          # 本文件
-├── todo/
-│   ├── default.nix
-│   ├── shell.qml
-│   ├── Theme.js
-│   └── ScreenModel.js
-└── dynamic-island/
-    ├── default.nix
-    ├── shell.qml
-    ├── Common/        # 共享模块（Appearance, Animations, Motion 等）
-    ├── Content/       # 内容组件（ClockContent, LyricsContent）
-    └── scripts/       # 外部脚本（lyrics_fetcher.py）
-```
+`default.nix` 组合 `todo/`、`dynamic-island/`，并部署共享的 `shared/Palette.js`。每个组件的 `default.nix` 维护文件清单和启动方式。
 
-### default.nix 规范
+- Todo：`shell.qml` 负责界面，`TodoModel.js`、`TodoStore.qml` 负责数据逻辑与存储，`Theme.qml`、`ScreenModel.js` 负责主题和屏幕选择。
+- Dynamic Island：`shell.qml` 为入口，`Common/` 放公共组件，`Content/` 放内容组件，`scripts/` 放歌词抓取脚本。
 
-```nix
-{ config, pkgs, ... }:
-{
-  # 1. 源码文件链接到 ~/.config/quickshell/<component>/
-  xdg.configFile = {
-    "quickshell/<component>/main.qml" = { source = ./main.qml; force = true; };
-    # ... 其他文件，同样加 force = true
-  };
+### 添加与修改组件
 
-  # 2. 启动器脚本 qs-<component>
-  home.packages = [
-    (pkgs.writeShellScriptBin "qs-<component>" ''
-      exec ${pkgs.quickshell}/bin/quickshell \
-        -p ${config.xdg.configHome}/quickshell/<component>/main.qml
-    '')
-  ];
-}
-```
+1. 每个组件使用独立目录，启动命令统一命名为 `qs-<name>`。
+2. 新增源码文件时，在该组件的 `files` 列表中声明相对文件名；部署目标由文件名生成。Todo 的服务重启触发清单同时从这里生成，共享配色文件作为额外依赖保留。
+3. 部署默认允许覆盖目标位置已有文件；已有不强制覆盖的文件保留在 `force` 的例外清单中。新增文件时应确认所需覆盖策略。
+4. 通用配色维护在 `shared/Palette.js`；组件自己的主题和布局继续留在组件目录。
+5. 新组件在 `home/desktop/quickshell/default.nix` 的 `imports` 中注册。
 
-### 规则
+### 启动方式
 
-1. **每个组件一个独立目录**，QML/JS 文件不跨组件共享。Theme.js、ScreenModel.js 等各自复制一份，方便独立定制。
-2. **入口 QML 文件**使用 `import "./Theme.js" as Theme` 的相对路径，和文件放在同一目录即可。
-3. **`xdg.configFile` 加 `force = true`**，确保 nix 重建时覆盖手动修改。
-4. **命名约定**：目录名 = 组件名，启动命令 = `qs-<name>`，`home.packages` 里的 script name 保持一致。
-5. 完成后在 `home/default.nix` 的 `imports` 列表加一行 `./desktop/quickshell/<component>`。
+Todo 由 `quickshell-todo.service` 跟随图形会话启动，`qs-todo` 通过 IPC 切换面板；服务未运行时，启动器会先启动服务再显示面板。
+
+Dynamic Island 使用 XDG autostart 启动，也提供 `qs-island` 命令和应用菜单入口。启动方式在各自组件的配置中维护。

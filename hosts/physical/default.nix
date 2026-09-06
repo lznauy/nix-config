@@ -1,33 +1,37 @@
-{
-  config,
-  pkgs,
-  ...
-}:
-
+_:
+let
+  user = import ../../config/user.nix;
+in
 {
   imports = [
-    ../common/base.nix
-    ../common/i18n.nix
-    ../common/clash-verge.nix
-    ../common/flatpak.nix
-    ../common/xwayland.nix
-    ../common/secrets
+    ../../profiles/desktop.nix
     ./virtualisation.nix
     ./winapps.nix
   ];
 
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-
   networking.hostName = "nixos";
-  networking.networkmanager.enable = true;
-
   networking.proxy.default = "http://127.0.0.1:7897/";
   # Keep local and libvirt guest traffic away from the global Clash proxy.
   networking.proxy.noProxy = "127.0.0.1,localhost,192.168.122.0/24";
-  # Let libvirt guests use the host Clash proxy without exposing it on the LAN.
-  networking.firewall.interfaces.virbr0.allowedTCPPorts = [ 7897 ];
+  # libvirt guests and the VMware desktop both use this proxy.
+  # VMware connects over the LAN (see hosts/vmware/default.nix), not virbr0.
   networking.firewall.allowedTCPPorts = [ 7897 ];
+  networking.firewall.interfaces.virbr0.allowedTCPPorts = [ 7897 ];
+
+  home-manager.users.${user.name} = {
+    home.sessionVariables = {
+      QS_TRANSLATOR_MODEL_DIR = "${user.home}/live-translator/models";
+      QS_TRANSLATOR_BIN = "${user.home}/live-translator/target/release/live-translator";
+      QS_TRANSLATOR_AUDIO_DEVICE = "pw:alsa_output.pci-0000_03_00.6.HiFi__Speaker__sink";
+    };
+    xdg.configFile."niri/outputs.kdl".text = ''
+      // This monitor advertises an incorrect preferred mode through EDID.
+      output "HDMI-A-1" {
+        mode "1920x1080@60.000"
+        scale 1
+      }
+    '';
+  };
 
   hardware.bluetooth.enable = true;
   hardware.bluetooth.powerOnBoot = true;
@@ -54,42 +58,10 @@
 
   services.upower.enable = true;
   services.power-profiles-daemon.enable = true;
-  virtualisation.docker.enable = true;
 
   # 指纹识别
   services.fprintd.enable = true;
   security.pam.services.login.fprintAuth = true;
   security.pam.services.sudo.fprintAuth = true;
 
-  users.users.lznauy = {
-    isNormalUser = true;
-    extraGroups = [
-      "wheel"
-      "users"
-      "networkmanager"
-      "docker"
-    ];
-  };
-
-  users.users.lznauy.shell = pkgs.fish;
-
-  programs.fish.enable = true;
-  programs.zsh.enable = true;
-
-  programs.niri.enable = true;
-  # greetd + tuigreet
-  services.greetd = {
-    enable = true;
-    settings = {
-      default_session = {
-        command = "${pkgs.tuigreet}/bin/tuigreet --time --time-format '%Y-%m-%d %H:%M' --remember --remember-session --sessions '${config.services.displayManager.sessionData.desktops}/share/wayland-sessions' --cmd niri-session";
-      };
-    };
-  };
-
-  environment.sessionVariables = {
-    QS_ICON_THEME = "WhiteSur-dark";
-  };
-
-  services.openssh.settings.AllowUsers = [ "lznauy" ];
 }

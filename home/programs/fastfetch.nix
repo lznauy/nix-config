@@ -1,5 +1,5 @@
 # fastfetch - 系统信息展示工具(neofetch 替代品)
-{ config, pkgs, ... }:
+_:
 
 {
   programs.fastfetch = {

@@ -4,10 +4,7 @@ let
     custom = true;
     name = "midnight";
     path =
-      if custom then
-        ./colorschemes/${name}.yaml
-      else
-        "${pkgs.base16-schemes}/share/themes/${name}.yaml";
+      if custom then ./colorschemes/${name}.yaml else "${pkgs.base16-schemes}/share/themes/${name}.yaml";
     polarity = "dark";
   };
 in
@@ -17,7 +14,7 @@ in
     enableReleaseChecks = false;
     autoEnable = false; # 选择性启用主题，只对明确配置的目标生效
     base16Scheme = colorScheme.path;
-    polarity = colorScheme.polarity;
+    inherit (colorScheme) polarity;
 
     fonts = {
       monospace = {

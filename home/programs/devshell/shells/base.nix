@@ -1,7 +1,7 @@
 # 基础编译工具
 { pkgs }:
-pkgs.mkShell {
-  buildInputs = with pkgs; [
+{
+  packages = with pkgs; [
     gcc
     gnumake
     binutils

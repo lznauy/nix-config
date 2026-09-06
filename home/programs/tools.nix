@@ -1,0 +1,65 @@
+{ pkgs, ... }:
+{
+  home.packages = with pkgs; [
+    gifski # 高质量 GIF 编码器
+    libwebp # WebP 图像格式工具集(cwebp/dwebp/gif2webp)
+    ffmpeg # 多媒体处理框架
+    openssl # 加密库与命令行工具
+    btop # 升级版top
+
+    net-tools # 网络配置工具集(ifconfig 等)
+    translate-shell # 终端翻译工具
+    libcaca # 文本模式图形渲染库
+    yq # YAML/TOML 命令行处理器
+    jq # JSON 命令行处理器
+    zip # ZIP 压缩工具
+    unzip # ZIP 解压工具
+    p7zip # 7z 压缩/解压工具
+    duf # 磁盘用量可视化工具
+    iotop # I/O 监控工具
+    cloc # 代码行数统计工具
+    doggo # 现代 DNS 查询工具
+    dnsutils # DNS 查询工具(dig / nslookup / host)
+    quien # 更好的 WHOIS 查询工具
+    witr # 进程溯源工具 — why is this running?
+    dive # Docker 镜像层分析工具
+    kubernetes-helm # Kubernetes 包管理器
+    kubectl # Kubernetes 命令行客户端(远程连接集群)
+    lsof # 查看打开文件工具
+    wget # HTTP 下载工具
+    posting # postman终端版
+    gh-dash # github终端版
+    pipx # Python CLI 工具隔离安装器
+    gping # 图形化 ping 工具
+    cmd-wrapped # 生成过去一年中的命令行活跃分布
+    sampler # 采样器：github.com/sqshq/sampler
+    neohtop # rust写的gui界面htop
+    hl-log-viewer # 日志高亮查看器
+    snitch # 终端进程监控工具
+
+    tree # 目录树展示工具
+    fd # 快速文件查找工具
+    ripgrep # 高性能文本搜索工具
+    bat # 带语法高亮的 cat 替代品
+    chafa # 终端图像渲染工具
+    yazi # 终端文件管理器
+    tmux # 终端复用器
+    gonzo # 日志分析工具
+    age # age 加密工具
+    sops # 密钥加密管理工具
+    nixfmt-tree # Nix 代码格式化工具
+    just # 命令运行器(Makefile 替代品)
+    fzf # 模糊搜索工具
+    lazygit # 终端 Git 客户端
+    hugo # 静态网站生成器
+    mkcert # 本地 HTTPS 证书生成工具
+    comma # 使用逗号临时运行未安装的程序
+    mark-shot # 截图标注工具
+    surge # TUI 下载管理器
+    tailcat # 基于 Tailscale 数据平面的点对点 netcat
+    upx # 可执行文件压缩工具
+    cava # 终端音量显示
+    pulseaudio # PulseAudio 客户端工具 (pactl, parec)
+    llmfit # 查看机器配置能跑哪些llm
+  ];
+}

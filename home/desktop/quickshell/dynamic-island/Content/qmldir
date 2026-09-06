@@ -2,3 +2,4 @@ ClockContent 1.0 ClockContent.qml
 LyricsContent 1.0 LyricsContent.qml
 singleton TranslationConfig 1.0 TranslationConfig.qml
 TranslationContent 1.0 TranslationContent.qml
+LyricsController 1.0 LyricsController.qml

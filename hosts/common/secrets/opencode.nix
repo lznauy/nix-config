@@ -1,80 +1,45 @@
 { config, lib, ... }:
+let
+  user = import ../../../config/user.nix;
+  providers = import ../../../config/ai.nix;
+  mkModel = provider: model: {
+    name = model;
+    limit = {
+      inherit (provider) context;
+      inherit (provider) output;
+    };
+    modalities = {
+      inherit (provider) input;
+      output = [ "text" ];
+    };
+  };
+in
 {
-  # 确保 ~/.config/opencode 目录存在（在 sops templates 写入前创建）
-  system.activationScripts.opencode-config-dir = lib.mkBefore ''
-    mkdir -p /home/lznauy/.config/opencode
-    chown lznauy:users /home/lznauy/.config/opencode
-  '';
-
+  systemd.tmpfiles.rules = [ "d ${user.home}/.config/opencode 0700 ${user.name} ${user.group} -" ];
   sops.templates."opencode.json" = {
-    owner = "lznauy";
-    group = "users";
-    path = "/home/lznauy/.config/opencode/config.json";
+    owner = user.name;
+    inherit (user) group;
+    path = "${user.home}/.config/opencode/config.json";
     content = builtins.toJSON {
       "$schema" = "https://opencode.ai/config.json";
-      model = "deepseek/deepseek-v4-pro";
-      mcp = {
-        nixos = {
-          type = "local";
-          command = [ "mcp-nixos" ];
-          enabled = true;
-        };
+      model = "deepseek/${providers.deepseek.model}";
+      mcp.nixos = {
+        type = "local";
+        command = [ "mcp-nixos" ];
+        enabled = true;
       };
-      provider = {
-        deepseek = {
-          npm = "@ai-sdk/openai-compatible";
-          name = "DeepSeek";
-          options = {
-            baseURL = "https://api.deepseek.com/v1";
-            apiKey = config.sops.placeholder."api_keys/deepseek";
-          };
-          models = {
-            "deepseek-v4-pro" = {
-              name = "deepseek-v4-pro";
-              limit = {
-                context = 256000;
-                output = 4096;
-              };
-              modalities = {
-                input = [ "text" ];
-                output = [ "text" ];
-              };
-            };
-            "deepseek-v4-flash" = {
-              name = "deepseek-v4-flash";
-              limit = {
-                context = 256000;
-                output = 4096;
-              };
-              modalities = {
-                input = [ "text" ];
-                output = [ "text" ];
-              };
-            };
-          };
+      provider = lib.mapAttrs (_: provider: {
+        npm = "@ai-sdk/openai-compatible";
+        inherit (provider) name;
+        options = {
+          inherit (provider) baseURL;
+          apiKey = config.sops.placeholder.${provider.secret};
         };
-        mimo = {
-          npm = "@ai-sdk/openai-compatible";
-          name = "MIMO";
-          options = {
-            baseURL = "https://token-plan-cn.xiaomimimo.com/v1";
-            apiKey = config.sops.placeholder."api_keys/mimo";
-          };
-          models = {
-            "mimo-v2.5-pro" = {
-              name = "mimo-v2.5-pro";
-              limit = {
-                context = 200000;
-                output = 4096;
-              };
-              modalities = {
-                input = [ "text" "image" ];
-                output = [ "text" ];
-              };
-            };
-          };
-        };
-      };
+        models = lib.genAttrs (lib.unique [
+          provider.model
+          provider.fastModel
+        ]) (mkModel provider);
+      }) providers;
     };
   };
 }

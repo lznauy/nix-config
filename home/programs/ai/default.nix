@@ -4,7 +4,10 @@ let
   llm-agents = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system};
 in
 {
-  imports = [ ./deepseek-harness.nix ];
+  imports = [
+    ./deepseek-harness.nix
+    ./commands.nix
+  ];
 
   home.sessionVariables.CLAUDE_CODE_EXECUTABLE = "${pkgs.claude-code}/bin/claude";
 

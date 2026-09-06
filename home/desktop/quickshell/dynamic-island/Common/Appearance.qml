@@ -3,6 +3,7 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import "../../shared/Palette.js" as Palette
 
 Singleton {
     id: root
@@ -34,17 +35,13 @@ Singleton {
 
     readonly property bool darkMode: luminance(surface) < 0.5
 
-    function luminance(colorValue) {
-        return colorValue.r * 0.2126 + colorValue.g * 0.7152 + colorValue.b * 0.0722
-    }
+    function luminance(colorValue) { return Palette.luminance(colorValue) }
 
     function withAlpha(colorValue, alpha) {
         return Qt.rgba(colorValue.r, colorValue.g, colorValue.b, alpha)
     }
 
-    function isColorValue(value) {
-        return typeof value === "string" && /^#[0-9a-fA-F]{6,8}$/.test(value)
-    }
+    function isColorValue(value) { return Palette.isColorValue(value) }
 
     function applyFallbackPalette() {
         root.primary = "#88C0D0"
@@ -83,10 +80,7 @@ Singleton {
         return true
     }
 
-    function tomlColor(data, key) {
-        var match = new RegExp("^\\s*" + key + "\\s*=\\s*\"(#[0-9a-fA-F]{6,8})\"", "m").exec(data)
-        return match ? match[1] : ""
-    }
+    function tomlColor(data, key) { return Palette.tomlColor(data, key) }
 
     function applyStarshipPalette(data) {
         var palette = {

@@ -1,5 +1,5 @@
 # kitty - GPU 加速终端模拟器（配色由 noctalia 模板管理，字体由 Stylix 全局管理）
-{ pkgs, ... }:
+_:
 
 {
   programs.kitty = {

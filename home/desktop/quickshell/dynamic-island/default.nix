@@ -1,28 +1,63 @@
-{ config, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
+  files = [
+    "Content/LyricsController.qml"
+    "shell.qml"
+    "Common/Appearance.qml"
+    "Common/DynamicIslandMotion.qml"
+    "Common/Sizes.qml"
+    "Common/Paths.qml"
+    "Common/qmldir"
+    "Content/ClockContent.qml"
+    "Content/LyricsContent.qml"
+    "Content/TranslationConfig.qml"
+    "Content/TranslationContent.qml"
+    "Content/qmldir"
+    "scripts/lyrics_fetcher.py"
+  ];
   islandDir = "${config.xdg.configHome}/quickshell/dynamic-island";
   islandIcon = "${pkgs.quickshell}/share/icons/hicolor/scalable/apps/org.quickshell.svg";
 in
 {
-  xdg.configFile = {
-    "quickshell/dynamic-island/shell.qml" = { source = ./shell.qml; force = true; };
-    "quickshell/dynamic-island/Common/Appearance.qml" = { source = ./Common/Appearance.qml; force = true; };
-    "quickshell/dynamic-island/Common/DynamicIslandMotion.qml" = { source = ./Common/DynamicIslandMotion.qml; force = true; };
-    "quickshell/dynamic-island/Common/Sizes.qml" = { source = ./Common/Sizes.qml; force = true; };
-    "quickshell/dynamic-island/Common/Paths.qml" = { source = ./Common/Paths.qml; force = true; };
-    "quickshell/dynamic-island/Common/qmldir" = { source = ./Common/qmldir; force = true; };
-    "quickshell/dynamic-island/Content/ClockContent.qml" = { source = ./Content/ClockContent.qml; force = true; };
-    "quickshell/dynamic-island/Content/LyricsContent.qml" = { source = ./Content/LyricsContent.qml; force = true; };
-    "quickshell/dynamic-island/Content/TranslationConfig.qml" = { source = ./Content/TranslationConfig.qml; force = true; };
-    "quickshell/dynamic-island/Content/TranslationContent.qml" = { source = ./Content/TranslationContent.qml; force = true; };
-    "quickshell/dynamic-island/Content/qmldir" = { source = ./Content/qmldir; force = true; };
-    "quickshell/dynamic-island/scripts/lyrics_fetcher.py" = { source = ./scripts/lyrics_fetcher.py; force = true; };
-  };
+  xdg.configFile =
+    builtins.listToAttrs (
+      map (
+        name:
+        lib.nameValuePair "quickshell/dynamic-island/${name}" {
+          source = ./. + "/${name}";
+          # Preserve the existing overwrite policy.
+          force = !(builtins.elem name [ "Content/LyricsController.qml" ]);
+        }
+      ) files
+    )
+    // {
+      "autostart/qs-island.desktop".text = ''
+        [Desktop Entry]
+        Type=Application
+        Name=qs-island
+        Exec=qs-island
+        Icon=qs-island
+        Terminal=false
+        StartupNotify=false
+      '';
+    };
 
   # Install the quickshell icon so the desktop entry can find it
   xdg.dataFile."icons/hicolor/scalable/apps/qs-island.svg".source = islandIcon;
 
   home.packages = [
+    (pkgs.writeShellApplication {
+      name = "qs-lyrics";
+      runtimeInputs = [ pkgs.python3 ];
+      text = ''
+        exec python3 ${./scripts/lyrics_fetcher.py} "$@"
+      '';
+    })
     (pkgs.writeShellScriptBin "qs-island" ''
       mkdir -p ${config.xdg.stateHome}/quickshell/dynamic-island
       exec ${pkgs.quickshell}/bin/quickshell \

@@ -10,19 +10,14 @@ ShellRoot {
     id: root
 
     property bool opened: false
-    property var todos: []
-    readonly property string dataHome: {
-        var configured = Quickshell.env("XDG_DATA_HOME")
-        return configured !== "" ? configured : Quickshell.env("HOME") + "/.local/share"
-    }
-    readonly property string dataFile: dataHome + "/quickshell/todos.json"
+    TodoStore { id: todoStore }
+    readonly property var todos: todoStore.todos
     readonly property int pendingCount: todos.filter(function(todo) { return !todo.done }).length
 
     signal panelOpened
 
     Theme { id: theme }
 
-    Component.onCompleted: loadData(todoFile.text())
 
     IpcHandler {
         target: "todo"
@@ -30,40 +25,6 @@ ShellRoot {
         function reveal(): void { root.showPanel() }
         function hide(): void { root.hidePanel() }
         function toggle(): void { root.togglePanel() }
-    }
-
-    FileView {
-        id: todoFile
-        path: root.dataFile
-        preload: true
-        blockLoading: true
-        atomicWrites: true
-        printErrors: false
-
-        onSaveFailed: function(error) {
-            console.warn("[todo] save failed:", error)
-        }
-    }
-
-    function loadData(raw) {
-        if (!raw || raw.length === 0) {
-            todos = []
-            return
-        }
-
-        try {
-            var data = JSON.parse(raw)
-            var loadedTodos = Array.isArray(data) ? data : data.todos
-            todos = Array.isArray(loadedTodos) ? loadedTodos : []
-        } catch (error) {
-            todos = []
-            console.warn("[todo] invalid todos.json:", error)
-        }
-    }
-
-    function saveData() {
-        // FileView writes asynchronously and atomically; the UI never waits for disk I/O.
-        todoFile.setText(JSON.stringify({todos: todos}, null, 2))
     }
 
     function showPanel() {
@@ -88,42 +49,10 @@ ShellRoot {
         }
     }
 
-    function addTodo(text) {
-        var cleanText = text.trim()
-        if (cleanText === "") return false
-
-        todos = todos.concat([{
-            id: Date.now(),
-            text: cleanText,
-            done: false,
-            createdAt: new Date().toISOString()
-        }])
-        saveData()
-        return true
-    }
-
-    function toggleTodo(id) {
-        todos = todos.map(function(todo) {
-            if (todo.id !== id) return todo
-            return {
-                id: todo.id,
-                text: todo.text,
-                done: !todo.done,
-                createdAt: todo.createdAt
-            }
-        })
-        saveData()
-    }
-
-    function deleteTodo(id) {
-        todos = todos.filter(function(todo) { return todo.id !== id })
-        saveData()
-    }
-
-    function clearCompleted() {
-        todos = todos.filter(function(todo) { return !todo.done })
-        saveData()
-    }
+    function addTodo(text) { return todoStore.add(text) }
+    function toggleTodo(id) { todoStore.toggle(id) }
+    function deleteTodo(id) { todoStore.remove(id) }
+    function clearCompleted() { todoStore.clearCompleted() }
 
     Variants {
         model: ScreenModel.targetScreens(Quickshell.screens, Quickshell.env("QS_TARGET_OUTPUT"))

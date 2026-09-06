@@ -10,7 +10,7 @@ hosts/
 └── virtual/      # k3s VM
 ```
 
-每台机器的配置由 `default.nix`（系统） + `hardware.nix`（硬件）组成，共享模块统一放到 `common/`。
+桌面主机由 `default.nix`（机器差异）和 `hardware.nix`（硬件）组成，共同引用 `profiles/desktop.nix`。K3s VM 由 `virtual/default.nix` 定义输出，组合 `k3s.nix` 与 `base.nix`，不使用独立的 `hardware.nix`。`common/` 中的模块由各主机按需引用。
 
 ## 部署命令
 
@@ -18,8 +18,8 @@ hosts/
 # 重建当前系统（应用配置变更）
 nh os switch /path/to/flake
 
-# 重建但不设为默认（测试用，重启后回滚）
-nh os boot /path/to/flake
+# 测试配置：立即激活，但不设为启动默认
+nh os test /path/to/flake
 
 # 仅构建、不激活（检查是否能通过）
 nh os build /path/to/flake
@@ -29,16 +29,16 @@ nh os build /path/to/flake
 
 ```bash
 # VMware 虚拟机
-nh os switch /path/to/flake#nixos -H nixos
+nh os switch /path/to/flake#nixos
 
 # 物理机
-nh os switch /path/to/flake#physical -H nixos
+nh os switch /path/to/flake#physical
 
 # k3s VM（构建并启动 VM）
 nh os build-vm /path/to/flake#vm-k3s
 ```
 
-`-H hostname` 会临时覆盖目标主机名，避免 rebuild 时报 hostname 不匹配。
+`#nixos`、`#physical` 是 flake 中的配置名称；`-H` 用于部署到远程主机时指定目标主机名。
 
 ## 安装新系统
 
@@ -59,8 +59,11 @@ reboot
 ## 更新依赖
 
 ```bash
-# 更新 flake.lock（拉取所有 inputs 最新版）
-nh os switch --update /path/to/flake
+# 更新所有 inputs（会同时更新 nixpkgs 和 nixpkgs-unstable）
+nix flake update /path/to/flake
+
+# 只更新 Clash 使用的 unstable 源
+nix flake update nixpkgs-unstable --flake /path/to/flake
 ```
 
 ## 实用技巧

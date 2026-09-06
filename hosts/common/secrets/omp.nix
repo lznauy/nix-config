@@ -1,49 +1,37 @@
 { config, lib, ... }:
+let
+  user = import ../../../config/user.nix;
+  providers = import ../../../config/ai.nix;
+in
 {
-  # 确保 ~/.omp/agent 目录存在（在 sops templates 写入前创建）
-  system.activationScripts.omp-config-dir = lib.mkBefore ''
-    mkdir -p /home/lznauy/.omp/agent
-    chown lznauy:users /home/lznauy/.omp/agent
-  '';
-
+  systemd.tmpfiles.rules = [ "d ${user.home}/.omp/agent 0700 ${user.name} ${user.group} -" ];
   sops.templates."omp-models.yml" = {
-    owner = "lznauy";
-    group = "users";
-    path = "/home/lznauy/.omp/agent/models.yml";
-    content = ''
-providers:
-  deepseek:
-    baseUrl: https://api.deepseek.com/v1
-    apiKey: ${config.sops.placeholder."api_keys/deepseek"}
-    api: openai-completions
-    models:
-      - id: deepseek-v4-pro
-        name: DeepSeek V4 Pro
-        reasoning: false
-        input:
-          - text
-        contextWindow: 256000
-        maxTokens: 4096
-      - id: deepseek-v4-flash
-        name: DeepSeek V4 Flash
-        reasoning: false
-        input:
-          - text
-        contextWindow: 256000
-        maxTokens: 4096
-  mimo:
-    baseUrl: https://token-plan-cn.xiaomimimo.com/v1
-    apiKey: ${config.sops.placeholder."api_keys/mimo"}
-    api: openai-completions
-    models:
-      - id: mimo-v2.5-pro
-        name: MiMo V2.5 Pro
-        reasoning: false
-        input:
-          - text
-          - image
-        contextWindow: 200000
-        maxTokens: 4096
-    '';
+    owner = user.name;
+    inherit (user) group;
+    path = "${user.home}/.omp/agent/models.yml";
+    # JSON is a YAML subset, so values are escaped without hand-written YAML.
+    content = builtins.toJSON {
+      providers = lib.mapAttrs (_: provider: {
+        baseUrl = provider.baseURL;
+        apiKey = config.sops.placeholder.${provider.secret};
+        api = "openai-completions";
+        models =
+          map
+            (model: {
+              id = model;
+              name = model;
+              reasoning = false;
+              inherit (provider) input;
+              contextWindow = provider.context;
+              maxTokens = provider.output;
+            })
+            (
+              lib.unique [
+                provider.model
+                provider.fastModel
+              ]
+            );
+      }) providers;
+    };
   };
 }

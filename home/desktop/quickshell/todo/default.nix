@@ -1,6 +1,18 @@
-{ config, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
-  quickshell = pkgs.quickshell;
+  files = [
+    "TodoModel.js"
+    "TodoStore.qml"
+    "shell.qml"
+    "Theme.qml"
+    "ScreenModel.js"
+  ];
+  inherit (pkgs) quickshell;
   todoLauncher = pkgs.writeShellScriptBin "qs-todo" ''
     if ${quickshell}/bin/qs ipc --config todo call todo toggle >/dev/null 2>&1; then
       exit 0
@@ -22,11 +34,20 @@ let
   '';
 in
 {
-  xdg.configFile = {
-    "quickshell/todo/shell.qml" = { source = ./shell.qml; force = true; };
-    "quickshell/todo/Theme.qml" = { source = ./Theme.qml; force = true; };
-    "quickshell/todo/ScreenModel.js" = { source = ./ScreenModel.js; force = true; };
-  };
+  xdg.configFile = builtins.listToAttrs (
+    map (
+      name:
+      lib.nameValuePair "quickshell/todo/${name}" {
+        source = ./. + "/${name}";
+        # Preserve the existing overwrite policy.
+        force =
+          !(builtins.elem name [
+            "TodoModel.js"
+            "TodoStore.qml"
+          ]);
+      }
+    ) files
+  );
 
   home.packages = [ todoLauncher ];
 
@@ -35,11 +56,7 @@ in
       Description = "Quickshell todo panel";
       After = [ config.wayland.systemd.target ];
       PartOf = [ config.wayland.systemd.target ];
-      X-Restart-Triggers = map toString [
-        ./shell.qml
-        ./Theme.qml
-        ./ScreenModel.js
-      ];
+      X-Restart-Triggers = map toString (map (name: ./. + "/${name}") files ++ [ ../shared/Palette.js ]);
     };
 
     Service = {

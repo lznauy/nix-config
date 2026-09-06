@@ -8,13 +8,16 @@ volumes:
   data:
 services:
   windows:
-    image: ghcr.io/dockur/windows:latest
+    image: ghcr.io/dockur/windows@sha256:0cff9eb0e7aee9953e55bc682852ca4fdca233145a58ae1ec94f0b0c01a2ed30
     container_name: WinApps # Created Docker VM Name.
     # Use stable public resolvers instead of inheriting a stale DNS server when
     # the host switches between home and company Wi-Fi networks.
     dns:
       - 119.29.29.29
       - 1.1.1.1
+    env_file:
+      - path: /run/secrets/rendered/winapps.env
+        format: raw
     environment:
       # Version of Windows to configure. For valid options, visit:
       # https://github.com/dockur/windows?tab=readme-ov-file#how-do-i-select-the-windows-version
@@ -28,7 +31,6 @@ services:
       DISK_SIZE: "64G" # Size of the primary hard disk.
       # DISK2_SIZE: "32G" # Uncomment to add an additional hard disk to the Windows VM. Ensure it is mounted as a volume below.
       USERNAME: "lznauy"
-      PASSWORD: "admin@123"
       HOME: "${HOME}" # Set path to Linux user home folder.
     ports:
       # Map '8006' on Linux host to '8006' on Windows VM --> For VNC Web Interface @ http://127.0.0.1:8006.

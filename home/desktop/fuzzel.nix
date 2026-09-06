@@ -5,7 +5,7 @@
   home.packages = [ pkgs.fuzzel ];
 
   xdg.configFile."fuzzel/fuzzel.ini" = {
-    force = true;  # 从 programs.fuzzel 迁移，覆盖旧文件
+    force = true; # 从 programs.fuzzel 迁移，覆盖旧文件
     text = ''
       # Noctalia 主题 — 此文件由 Noctalia 模板运行时写入
       include=~/.config/fuzzel/themes/noctalia

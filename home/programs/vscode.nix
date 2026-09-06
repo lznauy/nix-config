@@ -1,5 +1,5 @@
 # VS Code — 微软官方版(含遥测)；想用无遥测的开源构建版把 package 换成 pkgs.vscodium
-{pkgs, ...}:
+{ pkgs, ... }:
 {
   programs.vscode = {
     enable = true;

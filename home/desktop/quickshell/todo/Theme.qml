@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import "../shared/Palette.js" as Palette
 
 QtObject {
     id: root
@@ -55,17 +56,13 @@ QtObject {
     readonly property int animationFaster: 75
     readonly property int animationFast: 150
 
-    function luminance(value) {
-        return value.r * 0.2126 + value.g * 0.7152 + value.b * 0.0722
-    }
+    function luminance(value) { return Palette.luminance(value) }
 
     function withAlpha(value, alpha) {
         return Qt.rgba(value.r, value.g, value.b, alpha)
     }
 
-    function validColor(value) {
-        return typeof value === "string" && /^#[0-9a-fA-F]{6,8}$/.test(value)
-    }
+    function validColor(value) { return Palette.isColorValue(value) }
 
     function applyNoctaliaPalette(data) {
         var required = [
@@ -94,10 +91,7 @@ QtObject {
         return true
     }
 
-    function tomlColor(data, key) {
-        var match = new RegExp("^\\s*" + key + "\\s*=\\s*\"(#[0-9a-fA-F]{6,8})\"", "m").exec(data)
-        return match ? match[1] : ""
-    }
+    function tomlColor(data, key) { return Palette.tomlColor(data, key) }
 
     function applyStarshipPalette(data) {
         if (activeSource === "json") return true

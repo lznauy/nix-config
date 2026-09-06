@@ -1,7 +1,7 @@
 # Rust 开发环境
 { pkgs }:
-pkgs.mkShell {
-  buildInputs = with pkgs; [
+{
+  packages = with pkgs; [
     rustc
     cargo
     rust-analyzer

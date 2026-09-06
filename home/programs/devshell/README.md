@@ -13,8 +13,9 @@
 
 ```
 home/programs/devshell/
-├── default.nix    # nix develop 入口：定义 shell 组合，用 inputsFrom 合并
-├── home.nix       # home-manager 入口：提取各模块 buildInputs 全局安装
+├── default.nix    # nix develop 入口：定义 shell 组合
+├── toolchains.nix  # Home Manager 与 nix develop 共用的工具清单
+├── home.nix       # Home Manager 入口：安装共享工具清单
 └── shells/        # 语言模块目录
     ├── base.nix   # 基础编译工具（gcc、gnumake）
     ├── python.nix # Python 环境
@@ -39,13 +40,13 @@ exit                      # 退出，环境消失
 
 ### home-manager（全局安装）
 
-通过 `home.nix` 自动提取所有模块的 `buildInputs`，永久安装到系统。
+`toolchains.nix` 是唯一的工具清单来源；`home.nix` 安装全部工具，`default.nix` 生成开发 shell。
 
 ## 核心机制
 
-### inputsFrom
+### 工具清单
 
-`default.nix` 使用 `inputsFrom` 组合多个 `mkShell`，自动合并所有 `buildInputs`、`env`、`shellHook`：
+`default.nix` 从同一份工具清单组合 `mkShell`，并保留各语言的 `shellHook`：
 
 ```nix
 shells = {
@@ -55,7 +56,7 @@ shells = {
 
 buildShell = modules:
   pkgs.mkShell {
-    inputsFrom = modules;  # 自动继承所有模块的内容
+    packages = ...;        # 从 toolchains.nix 组合包
   };
 ```
 
@@ -71,7 +72,7 @@ shellHook = ''
 
 ### env
 
-静态环境变量，会被 `inputsFrom` 继承，也可被 `home.nix` 提取到系统：
+各语言模块只声明自己的包和 shell hook，两个入口都从 `toolchains.nix` 读取：
 
 ```nix
 env = {
@@ -175,5 +176,5 @@ pkgs.mkShell {
 
 - `shellHook` 只在 `nix develop` 时生效，home-manager 安装时会忽略
 - `env` 在两个场景都生效
-- `buildInputs` 是包的主要载体，`inputsFrom` 和 `home.nix` 都依赖它
+- 工具包只在 `toolchains.nix` 和对应语言模块中维护一次
 - 每个语言文件只负责自己的环境，组合逻辑在 `default.nix` 中管理

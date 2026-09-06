@@ -9,7 +9,7 @@ in
 {
   programs.noctalia = {
     enable = true;
-    validateConfig = false;
+    checkConfig = true;
 
     settings = {
       # ── Shell ─────────────────────────────────────────────
@@ -49,22 +49,22 @@ in
 
         # 左侧区域 — 从左到右排列的组件列表
         start = [
-          "launcher"        # 启动器/应用菜单
-          "wallpaper"       # 壁纸切换
-          "clock"           # 时钟
-          "ram-text"         # 内存使用显示
-          "active_window"   # 当前活动窗口标题
+          "launcher" # 启动器/应用菜单
+          "wallpaper" # 壁纸切换
+          "clock" # 时钟
+          "ram-text" # 内存使用显示
+          "active_window" # 当前活动窗口标题
         ];
         # 中间区域 — 居中对齐的组件列表
         center = [ "workspaces" ];
         # 右侧区域 — 从右到左排列的组件列表
         end = [
-          "media"           # 媒体播放控制
-          "tray"            # 系统托盘
-          "notifications"   # 通知
-          "network"         # 网络状态
-          "battery"         # 电池状态
-          "control-center"  # 控制中心
+          "media" # 媒体播放控制
+          "tray" # 系统托盘
+          "notifications" # 通知
+          "network" # 网络状态
+          "battery" # 电池状态
+          "control-center" # 控制中心
         ];
       };
 
