@@ -14,7 +14,11 @@ let
       ../tests
       ../home/programs/onlyoffice-fonts.sh
       ../home/desktop/quickshell/todo/TodoModel.js
+      ../home/desktop/quickshell/todo/Theme.qml
+      ../home/desktop/quickshell/todo/default.nix
       ../home/desktop/quickshell/shared/Palette.js
+      ../home/desktop/quickshell/dynamic-island/Common/Appearance.qml
+      ../home/desktop/quickshell/dynamic-island/default.nix
       ../home/desktop/quickshell/dynamic-island/scripts/lyrics_fetcher.py
     ];
   };

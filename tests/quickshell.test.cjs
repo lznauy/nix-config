@@ -11,6 +11,18 @@ function load(file) {
 const model = load("home/desktop/quickshell/todo/TodoModel.js");
 const palette = load("home/desktop/quickshell/shared/Palette.js");
 const todo = {id: 100, text: "existing", done: false, createdAt: "2026-01-01", extra: "preserve"};
+test("todo theme deploys imported scripts beside its QML file", () => {
+  const theme = fs.readFileSync(path.join(__dirname, "..", "home/desktop/quickshell/todo/Theme.qml"), "utf8");
+  const module = fs.readFileSync(path.join(__dirname, "..", "home/desktop/quickshell/todo/default.nix"), "utf8");
+  assert.match(theme, /import "\.\/Palette\.js" as Palette/);
+  assert.match(module, /"quickshell\/todo\/Palette\.js"\.source = \.\.\/shared\/Palette\.js;/);
+});
+test("dynamic island deploys imported scripts inside its configuration root", () => {
+  const appearance = fs.readFileSync(path.join(__dirname, "..", "home/desktop/quickshell/dynamic-island/Common/Appearance.qml"), "utf8");
+  const module = fs.readFileSync(path.join(__dirname, "..", "home/desktop/quickshell/dynamic-island/default.nix"), "utf8");
+  assert.match(appearance, /import "\.\/Palette\.js" as Palette/);
+  assert.match(module, /"quickshell\/dynamic-island\/Common\/Palette\.js"\.source = \.\.\/shared\/Palette\.js;/);
+});
 test("todo reads legacy arrays and object documents", () => {
   assert.equal(model.decode(JSON.stringify([todo]))[0].text, "existing");
   assert.equal(model.decode(JSON.stringify({todos: [todo]}))[0].id, 100);

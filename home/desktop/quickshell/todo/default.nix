@@ -34,20 +34,27 @@ let
   '';
 in
 {
-  xdg.configFile = builtins.listToAttrs (
-    map (
-      name:
-      lib.nameValuePair "quickshell/todo/${name}" {
-        source = ./. + "/${name}";
-        # Preserve the existing overwrite policy.
-        force =
-          !(builtins.elem name [
-            "TodoModel.js"
-            "TodoStore.qml"
-          ]);
-      }
-    ) files
-  );
+  xdg.configFile =
+    builtins.listToAttrs (
+      map (
+        name:
+        lib.nameValuePair "quickshell/todo/${name}" {
+          source = ./. + "/${name}";
+          # Preserve the existing overwrite policy.
+          force =
+            !(builtins.elem name [
+              "TodoModel.js"
+              "TodoStore.qml"
+            ]);
+        }
+      ) files
+    )
+    // {
+      # Keep script imports beside their QML consumer. Home Manager links each
+      # source into a separate store path, so cross-directory relative imports
+      # cannot reliably resolve through the deployed symlinks.
+      "quickshell/todo/Palette.js".source = ../shared/Palette.js;
+    };
 
   home.packages = [ todoLauncher ];
 

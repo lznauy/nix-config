@@ -1,7 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
-import "../shared/Palette.js" as Palette
+import "./Palette.js" as Palette
 
 QtObject {
     id: root

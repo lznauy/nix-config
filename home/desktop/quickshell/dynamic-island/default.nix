@@ -36,6 +36,7 @@ in
       ) files
     )
     // {
+      "quickshell/dynamic-island/Common/Palette.js".source = ../shared/Palette.js;
       "autostart/qs-island.desktop".text = ''
         [Desktop Entry]
         Type=Application
