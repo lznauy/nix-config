@@ -64,6 +64,11 @@ in
       exec ${pkgs.quickshell}/bin/quickshell \
         --path ${islandDir}/shell.qml
     '')
+    (pkgs.writeShellScriptBin "qs-island-toggle" ''
+      exec ${pkgs.quickshell}/bin/quickshell \
+        --path ${islandDir}/shell.qml \
+        ipc call island "''${1:-toggle}"
+    '')
   ];
 
   xdg.desktopEntries."qs-island" = {

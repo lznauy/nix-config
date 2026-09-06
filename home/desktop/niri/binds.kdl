@@ -11,6 +11,7 @@ binds {
     Mod+Shift+L { spawn "loginctl" "lock-session"; }
     Mod+O repeat=false { toggle-overview; }
     Mod+Q repeat=false { close-window; }
+    Mod+I repeat=false { spawn "qs-island-toggle"; }
 
     // -------------------------
     // 媒体键
