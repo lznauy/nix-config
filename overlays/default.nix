@@ -25,9 +25,28 @@ in
   tailcat = tailcat.packages.${system}.default.overrideAttrs {
     doCheck = false;
   };
-  # 上游 flake 的 vendorHash 已过期，修正为当前 go.mod 的实际值。
-  surge = surge.packages.${system}.default.overrideAttrs {
-    vendorHash = "sha256-Ei2i7dQ9s42Gg6f2iLABbTG7OQspjHoRnqIhkfcNvFo=";
+  # 上游 flake 的 vendorHash 落后于其 go.mod（bubbles/flock 升级未同步 hash），
+  # 且 buildGoModule 的 vendorHash 在 eval 期确定，overrideAttrs 改不动，
+  # 故用本机 buildGoModule 重新打包。
+  surge = final.buildGoModule rec {
+    pname = "surge";
+    version = "0.11.2";
+    src = inputs.surge;
+    vendorHash = "sha256-5rlDAhs3KXq00X5NE8RGAyiS6A6TFE6j/ngYaolaY94=";
+    subPackages = [ "." ];
+    ldflags = [
+      "-s"
+      "-w"
+      "-X main.version=${version}"
+    ];
+    postInstall = ''
+      ln -s Surge $out/bin/surge
+    '';
+    # 测试会写 $HOME/.config，重定向到可写目录
+    preCheck = ''
+      export HOME=$TMPDIR
+    '';
+    meta.mainProgram = "surge";
   };
   # 测试环境有问题，跳过
   pipx = prev.pipx.overridePythonAttrs { doCheck = false; };
