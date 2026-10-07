@@ -43,8 +43,6 @@
 
     mark-shot.url = "github:jswysnemc/mark-shot";
 
-    surge.url = "github:SurgeDM/Surge";
-
     tailcat = {
       url = "github:tailscale/tailcat";
       inputs.nixpkgs.follows = "nixpkgs";

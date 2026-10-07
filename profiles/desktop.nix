@@ -2,6 +2,7 @@
 {
   config,
   inputs,
+  lib,
   pkgs,
   ...
 }:
@@ -21,7 +22,14 @@ in
   ];
 
   nixpkgs = {
-    config.allowUnfree = true;
+    config = {
+      allowUnfree = true;
+      # splayer 依赖的 electron 大版本被 nixpkgs 标记为 EOL。按"名字+主版本"放行：
+      # 补丁版升级(41.10.7→41.11.x)不再需要改这里；换大版本(41→42)时会再次
+      # 提示拒绝，那时应确认 splayer 是否已跟进新 electron 再放行。
+      allowInsecurePredicate =
+        pkg: (pkg.pname or null) == "electron" && lib.versions.major (pkg.version or "") == "41";
+    };
     overlays = [
       inputs.claude-code.overlays.default
       inputs.nur.overlays.default
