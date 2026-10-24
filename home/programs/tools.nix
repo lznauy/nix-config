@@ -33,7 +33,7 @@
     gping # 图形化 ping 工具
     cmd-wrapped # 生成过去一年中的命令行活跃分布
     sampler # 采样器：github.com/sqshq/sampler
-    neohtop # rust写的gui界面htop
+    # neohtop # rust写的gui界面htop
     hl-log-viewer # 日志高亮查看器
     snitch # 终端进程监控工具
 

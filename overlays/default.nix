@@ -14,7 +14,14 @@ in
   # 稳定分支基座，clash-verge-rev 单包追 nixpkgs-unstable（上游正式版，非 AutoBuild）
   inherit (unstablePkgs) clash-verge-rev;
 
-  quien = quien.packages.${system}.default;
+  # 上游 flake 的 vendorHash 落后于自身 go.mod/go.sum（缓存里的 vendor 还是
+  # dns@1.1.72 / x/net@0.56.0 等旧版本），Nix 直接命中缓存导致 vendoring 不一致。
+  # 用当前锁定的 go.sum 重算 FOD 输出哈希；上游修好后可删掉这段。
+  quien = quien.packages.${system}.default.overrideAttrs (old: {
+    goModules = old.goModules.overrideAttrs (_: {
+      outputHash = "sha256-PIBHAi92+k9Cr2koPZ/Oyu6vhtgso7mfTcK1W7l9sMM=";
+    });
+  });
   witr = witr.packages.${system}.default.overrideAttrs {
     # launchd 测试是 macOS 专属，proc 文件锁测试在沙盒中失败
     doCheck = false;
