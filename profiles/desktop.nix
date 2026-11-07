@@ -2,7 +2,6 @@
 {
   config,
   inputs,
-  lib,
   pkgs,
   ...
 }:
@@ -24,14 +23,8 @@ in
   nixpkgs = {
     config = {
       allowUnfree = true;
-      # splayer 依赖的 electron 大版本被 nixpkgs 标记为 EOL。按"名字+主版本"放行：
-      # 补丁版升级(41.10.7→41.11.x)不再需要改这里；换大版本(41→42)时会再次
-      # 提示拒绝，那时应确认 splayer 是否已跟进新 electron 再放行。
-      allowInsecurePredicate =
-        pkg: (pkg.pname or null) == "electron" && lib.versions.major (pkg.version or "") == "41";
     };
     overlays = [
-      inputs.claude-code.overlays.default
       inputs.nur.overlays.default
       (import ../overlays { inherit inputs; })
     ];
@@ -62,6 +55,8 @@ in
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+  # 限制引导菜单条目数量，避免 161 个旧 generation 全塞进启动菜单
+  boot.loader.systemd-boot.configurationLimit = 30;
 
   networking.networkmanager.enable = true;
 
@@ -83,6 +78,9 @@ in
   programs.zsh.enable = true;
 
   programs.niri.enable = true;
+
+  # 桌面登录使用密码，让 PAM 自动解锁登录密钥环；其他服务仍可使用指纹。
+  security.pam.services.greetd.fprintAuth = false;
 
   # greetd + tuigreet
   services.greetd = {

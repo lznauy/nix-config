@@ -1,6 +1,7 @@
 {
   config,
   inputs,
+  lib,
   pkgs,
   ...
 }:
@@ -8,6 +9,10 @@
 let
   user = import ../../config/user.nix;
   system = pkgs.stdenv.hostPlatform.system;
+  # 使用 FreeRDP 原生 askpass，避免口令出现在 /p:... 进程命令行中。
+  rdpAskpass = pkgs.writeShellScript "winapps-askpass" ''
+    exec ${pkgs.coreutils}/bin/cat ${lib.escapeShellArg config.sops.secrets."winapps/password".path}
+  '';
 in
 {
   environment.sessionVariables.LIBVIRT_DEFAULT_URI = "qemu:///system";
@@ -33,8 +38,8 @@ in
     force = true;
     text = ''
       RDP_USER="${user.name}"
-      RDP_PASS="$(cat ${config.sops.secrets."winapps/password".path})"
-      RDP_ASKPASS=""
+      RDP_PASS=""
+      RDP_ASKPASS="${rdpAskpass}"
       RDP_DOMAIN=""
 
       RDP_IP="127.0.0.1"

@@ -19,6 +19,17 @@
     cores = lib.mkDefault 2;
     keep-derivations = true;
     keep-outputs = true;
+    # 可用空间低于 20G 时让 nix 自动触发 GC，腾到 50G 为止。
+    min-free = 20 * 1024 * 1024 * 1024;
+    max-free = 50 * 1024 * 1024 * 1024;
+  };
+
+  # 定期垃圾回收。必须走系统级 nix-gc.timer（root 权限），
+  # 用户级的 nh clean 删不掉 root 拥有的 system generation，等于白跑。
+  nix.gc = {
+    automatic = true;
+    dates = "weekly";
+    options = "--delete-older-than 30d";
   };
 
   environment.systemPackages = with pkgs; [

@@ -36,6 +36,7 @@
     # neohtop # rust写的gui界面htop
     hl-log-viewer # 日志高亮查看器
     snitch # 终端进程监控工具
+    gh # github api工具
 
     tree # 目录树展示工具
     fd # 快速文件查找工具

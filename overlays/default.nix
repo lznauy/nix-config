@@ -2,55 +2,32 @@
 final: prev:
 let
   system = prev.stdenv.hostPlatform.system;
-  unstablePkgs = inputs.nixpkgs-unstable.legacyPackages.${system};
-  inherit (inputs)
-    quien
-    witr
-    mark-shot
-    tailcat
-    ;
+  importPackages =
+    input:
+    import input {
+      inherit system;
+      inherit (prev) config;
+    };
+  unstablePkgs = importPackages inputs.nixpkgs-unstable;
+  cachedPkgs = importPackages inputs.nixpkgs-cached;
 in
 {
-  # 稳定分支基座，clash-verge-rev 单包追 nixpkgs-unstable（上游正式版，非 AutoBuild）
-  inherit (unstablePkgs) clash-verge-rev;
+  # 使用完整上游包集，避免 override 改变构建路径而失去二进制缓存。
+  inherit (unstablePkgs) witr tailcat;
+  inherit (cachedPkgs) clash-verge-rev;
+  claude-code = inputs.llm-agents.packages.${system}.claude-code;
 
-  # 上游 flake 的 vendorHash 落后于自身 go.mod/go.sum（缓存里的 vendor 还是
-  # dns@1.1.72 / x/net@0.56.0 等旧版本），Nix 直接命中缓存导致 vendoring 不一致。
-  # 用当前锁定的 go.sum 重算 FOD 输出哈希；上游修好后可删掉这段。
-  quien = quien.packages.${system}.default.overrideAttrs (old: {
-    goModules = old.goModules.overrideAttrs (_: {
-      outputHash = "sha256-PIBHAi92+k9Cr2koPZ/Oyu6vhtgso7mfTcK1W7l9sMM=";
-    });
-  });
-  witr = witr.packages.${system}.default.overrideAttrs {
-    # launchd 测试是 macOS 专属，proc 文件锁测试在沙盒中失败
-    doCheck = false;
-  };
-  mark-shot = mark-shot.packages.${system}.default;
-  # e2e 测试需网络且并行 exec 构建产物，Nix 沙箱下必然失败，跳过
-  tailcat = tailcat.packages.${system}.default.overrideAttrs {
-    doCheck = false;
-  };
-  # surge(TUI 下载管理器)直接用 nixpkgs 的 surge-downloader：官方项目、
-  # nixpkgs 维护者跟版。此前本地 buildGoModule 需随 rev 手动同步 vendorHash，
-  # 上游 go.mod 一变就断，已废弃。
-  # 测试环境有问题，跳过
-  pipx = prev.pipx.overridePythonAttrs { doCheck = false; };
-  niri = prev.niri.overrideAttrs (old: {
-    patches = (old.patches or [ ]) ++ [
-      (prev.fetchpatch {
-        name = "niri-shm-sharing-26.04.patch";
-        url = "https://github.com/wrvsrx/niri/compare/tag_support-shm-sharing_4~19..tag_support-shm-sharing_4.patch";
-        sha256 = "15czbxdvcmm7fp4w3d1n463kpg7l6mbjh1msm6176296nn7g7dic";
-      })
-      # 修复 DMA-BUF modifier 协商及 SHM buffer metadata；上游 fork PR #1。
-      (prev.fetchpatch {
-        name = "niri-shm-sharing-26.04-fixes.patch";
-        url = "https://github.com/wrvsrx/niri/compare/6c1613cee488515f3021ae9d8ef9233d6719c13f...2ab59b9.patch";
-        sha256 = "sha256-tmy24IzDnx7hJfQs/Ufy8qXDA8L0b/uTilRRxHcIBMM=";
-      })
-    ];
-  });
+  # vscode 1.144.0 起上游把内置 ripgrep 换成 @vscode/ripgrep-universal，
+  # 而 nixpkgs 26.05 的 generic.nix 仍写死 @vscode/ripgrep/bin/rg，
+  # patchPhase 里的 rm 直接报 No such file or directory。
+  # unstable 已按 vscodeVersion 分支处理路径，上游回落后可删掉这段。
+  # vscode 是 unfree 包，必须走带 config 的实例（裸 legacyPackages 会在 eval 阶段被拦）。
+  inherit (unstablePkgs) vscode;
+
+  # 官方固定版本二进制只做重打包，不再本地编译 Go / C++ / Rust。
+  quien = final.callPackage ../pkgs/quien { };
+  mark-shot = unstablePkgs.callPackage ../pkgs/mark-shot { };
+  splayer-next = final.callPackage ../pkgs/splayer-next { };
   # QQNT — 版本锁定
   qq = final.callPackage ../pkgs/qq { inherit (prev) qq; };
 }

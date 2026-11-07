@@ -1,3 +1,4 @@
+{ lib, pkgs, ... }:
 {
   # 生成 ~/.config/mimeapps.list
   xdg.configFile."mimeapps.list".force = true;
@@ -14,9 +15,8 @@
       "x-scheme-handler/http" = [ "google-chrome.desktop" ];
       "x-scheme-handler/https" = [ "google-chrome.desktop" ];
 
-      # 视频/音频
-      "video/*" = [ "splayer.desktop" ];
-      "audio/*" = [ "splayer.desktop" ];
+      # SPlayer Next 处理音频与网易云链接；视频不再误指向音乐播放器。
+      "x-scheme-handler/orpheus" = [ pkgs.splayer-next.desktopId ];
 
       # 图片
       "image/png" = [ "google-chrome.desktop" ];
@@ -26,6 +26,7 @@
 
       # 文件管理器
       "inode/directory" = [ "yazi.desktop" ];
-    };
+    }
+    // lib.genAttrs pkgs.splayer-next.audioMimeTypes (_: [ pkgs.splayer-next.desktopId ]);
   };
 }

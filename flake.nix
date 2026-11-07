@@ -4,12 +4,13 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
 
-    # 仅用于单包追新（如 clash-verge-rev），系统基座保持 nixos-26.05
+    # 仅供独立工具和预编译包运行依赖追新，系统基座保持 nixos-26.05。
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
 
     nix-flatpak.url = "git+https://github.com/gmodena/nix-flatpak?ref=refs/tags/v0.7.0";
 
-    claude-code.url = "github:sadjow/claude-code-nix";
+    # 单包固定到已验证有官方缓存的快照，避免依赖其他应用的间接输入。
+    nixpkgs-cached.url = "https://releases.nixos.org/nixos/unstable/nixos-26.11pre1105037.1c89083e451e/nixexprs.tar.zst";
 
     home-manager = {
       url = "github:nix-community/home-manager/release-26.05";
@@ -25,8 +26,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    quien.url = "github:retlehs/quien";
-
     stylix = {
       url = "github:danth/stylix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -38,15 +37,6 @@
     };
 
     llm-agents.url = "github:numtide/llm-agents.nix";
-
-    witr.url = "github:pranshuparmar/witr";
-
-    mark-shot.url = "github:jswysnemc/mark-shot";
-
-    tailcat = {
-      url = "github:tailscale/tailcat";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
 
     winapps = {
       url = "github:winapps-org/winapps";
@@ -85,6 +75,9 @@
 
       devShells.${system} = import ./home/programs/devshell { inherit pkgs; };
       formatter.${system} = pkgs.nixfmt-tree;
-      checks.${system} = import ./checks { inherit pkgs; };
+      checks.${system} = (import ./checks { inherit pkgs inputs; }) // {
+        # 预编译包的桌面入口及 ABI 安装检查也必须进入常规 just check。
+        inherit (inputs.self.nixosConfigurations.physical.pkgs) mark-shot quien splayer-next;
+      };
     };
 }

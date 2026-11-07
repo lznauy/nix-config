@@ -10,10 +10,11 @@ in
       flags = {
         process_memory_as_value = true;
         tree = true;
-        network_use_log = false;
         enable_gpu = true;
-        enable_cache_memory = true;
       };
+
+      network.use_log = false;
+      memory.cache_memory = true;
 
       processes = {
         columns = [

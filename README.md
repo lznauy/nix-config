@@ -73,7 +73,7 @@ secrets/          → sops-nix 密钥
 
 | 命令 | 用途 |
 |------|------|
-| `just check` | 求值所有主机和 flake 输出，运行 Nix 格式、Statix、Deadnix 检查及现有 JS/Python 测试 |
+| `just check` | 求值所有主机和 flake 输出，运行静态检查、JS/Python 测试、预编译包安装检查及 WinApps 合成凭据检查 |
 | `just test` | 仅运行现有 JS/Python 测试 |
 | `just eval` | 仅求值三套主机的完整系统派生 |
 | `just fmt` | 格式化 Nix 文件 |
@@ -81,6 +81,8 @@ secrets/          → sops-nix 密钥
 `just check` 等价于 `nix flake check path:.`，不构建或激活完整系统。检查派生会构建，首次运行可能需要下载工具。使用 `path:.` 是为了让新建但尚未被 Git 跟踪的配置也参与检查；新增文件仍需在提交时加入 Git。
 
 公共 Nix 构建预算在 `hosts/common/base.nix` 中使用默认值；机器需要不同预算时，直接在主机配置中设置 `nix.settings.max-jobs` 和 `nix.settings.cores`。
+
+完整配置检查、已修复问题和后续优化取舍见 [全仓检查记录](hosts/full-audit.md)。
 
 ### 系统维护
 
