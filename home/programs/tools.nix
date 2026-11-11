@@ -62,5 +62,7 @@
     cava # 终端音量显示
     pulseaudio # PulseAudio 客户端工具 (pactl, parec)
     llmfit # 查看机器配置能跑哪些llm
+    worktrunk # git worktree 管理(wt)，并行 AI agent 工作流
+    agent-browser # AI agent 无头浏览器自动化 CLI
   ];
 }

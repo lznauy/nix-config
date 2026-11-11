@@ -14,6 +14,8 @@ in
 {
   # 使用完整上游包集，避免 override 改变构建路径而失去二进制缓存。
   inherit (unstablePkgs) witr tailcat;
+  # AI agent 工作流工具：主分支旧版 agent-browser 不带 chromium，unstable 带包装。
+  inherit (unstablePkgs) worktrunk agent-browser;
   inherit (cachedPkgs) clash-verge-rev;
   claude-code = inputs.llm-agents.packages.${system}.claude-code;
 
